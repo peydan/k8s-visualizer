@@ -64,15 +64,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fadeIn { animation: fadeIn 0.25s ease-out forwards; }
-
-    @keyframes pulseBeam {
-      0% { stroke-dashoffset: 100; }
-      100% { stroke-dashoffset: 0; }
-    }
-    .pulse-beam {
-      stroke-dasharray: 8, 8;
-      animation: pulseBeam 1.2s linear infinite;
-    }
   </style>
 </head>
 <body class="text-slate-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200 min-h-screen">
@@ -115,13 +106,16 @@
         shieldCheck: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
         arrowRight: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>,
         checkCircle: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
-        activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+        circle: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/></svg>,
+        powerOff: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" x2="12" y1="2" y2="12"/></svg>,
+        slash: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="4" x2="20" y1="4" y2="20"/></svg>,
+        trophy: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
         folder: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>,
         play: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>,
         pause: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>,
-        fastForward: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg>,
-        gauge: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>,
-        map: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+        map: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>,
+        activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+        refreshCw: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       };
       return icons[name] || <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/></svg>;
     };
@@ -139,73 +133,40 @@
 
     // --- K8S EDUCATIONAL CONCEPTS CATALOG ---
     const K8S_CONCEPTS = {
-      'traffic-routing': {
-        id: 'traffic-routing',
-        name: 'Kubernetes Traffic Routing & Ingress Pipeline',
-        kind: 'Networking Architecture',
-        category: 'networking',
-        shortDescription: 'How an external user request travels through Ingress, kube-proxy, Service ClusterIP, and reaches a container.',
-        analogy: 'Airport Baggage & Passenger Routing: A passenger arrives at International Terminal (Ingress), shows their passport (TLS cert), gets routed to the Domestic Transfer Desk (Service), and boards the exact available Shuttle Bus (Pod).',
-        whyItMatters: [
-          '1. Layer 7 Ingress: Decodes HTTP hostnames and paths (e.g. /api -> backend, / -> frontend) and offloads SSL/TLS encryption.',
-          '2. Layer 4 Service: Provides a permanent virtual ClusterIP and coordinates load balancing across ephemeral Pod IPs.',
-          '3. kube-proxy: Manages iptables / IPVS rules on each worker node to perform Destination NAT (DNAT).',
-          '4. Pod Endpoints: Dynamically register and deregister with the Service as pods scale up, down, or restart.'
-        ],
-        keyAttributes: [
-          { label: 'Layer 7', description: 'HTTP/HTTPS, Host headers, URL Path prefixes, TLS Termination' },
-          { label: 'Layer 4', description: 'TCP/UDP, Virtual ClusterIP, iptables/IPVS DNAT, Port Translation' },
-          { label: 'DNS Name', description: '<service>.<namespace>.svc.cluster.local' }
-        ],
-        kubectlCommands: [
-          { command: 'kubectl get endpoints <service-name>', explanation: 'Lists all live healthy Pod target IPs registered behind a service' },
-          { command: 'kubectl describe ingress <ingress-name>', explanation: 'Shows path routing rules and backend targets' }
-        ],
-        yamlSnippet: `# Complete Ingress -> Service -> Deployment pipeline
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: main-ingress
-spec:
-  rules:
-  - host: app.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-service
-            port:
-              number: 80`,
-        iconName: 'map',
-        color: '#06b6d4'
-      },
       'namespace': {
         id: 'namespace',
         name: 'Namespace',
         kind: 'Cluster Virtualization',
         category: 'control-plane',
-        shortDescription: 'Provides virtual boundaries isolating resources and environments within a physical cluster.',
-        analogy: 'Apartments in a high-rise building. Each family has private space while sharing the building foundations.',
-        whyItMatters: ['Prevents naming collisions.', 'Enables ResourceQuotas and multi-tenancy.'],
-        keyAttributes: [{ label: 'Scope', description: 'Namespaced vs Cluster-wide' }],
-        kubectlCommands: [{ command: 'kubectl get ns', explanation: 'Lists namespaces' }],
+        shortDescription: 'Provides a virtual boundary for isolating resources, teams, and environments within a single physical cluster.',
+        analogy: 'Apartments in a high-rise building. Each family has private space while sharing the building\'s physical foundations (Worker Nodes, CPU/RAM).',
+        whyItMatters: [
+          'Prevents naming collisions across microservices.',
+          'Worker nodes are cluster-wide; pods and services belong to specific namespaces.',
+          'Cross-namespace communication uses FQDN: `<service-name>.<namespace>.svc.cluster.local`.'
+        ],
+        keyAttributes: [{ label: 'DNS Format', description: '<service>.<namespace>.svc.cluster.local' }],
+        kubectlCommands: [{ command: 'kubectl get ns', explanation: 'Lists all active namespaces' }],
         yamlSnippet: `apiVersion: v1\nkind: Namespace\nmetadata:\n  name: production`,
         iconName: 'folder',
         color: '#10b981'
       },
-      'api-server': { id: 'api-server', name: 'kube-apiserver', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Central gateway and REST API brain.', analogy: 'Airport Control Tower.', whyItMatters: ['Authenticates and validates requests.'], keyAttributes: [{ label: 'Port', description: '6443' }], kubectlCommands: [{ command: 'kubectl cluster-info', explanation: 'Cluster address' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: kube-apiserver`, iconName: 'server', color: '#3b82f6' },
-      'etcd': { id: 'etcd', name: 'etcd Key-Value Store', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Distributed state database.', analogy: 'Master permanent ledger.', whyItMatters: ['Stores entire cluster state.'], keyAttributes: [{ label: 'Consensus', description: 'Raft' }], kubectlCommands: [{ command: 'etcdctl member list', explanation: 'List peers' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: etcd`, iconName: 'database', color: '#06b6d4' },
-      'scheduler': { id: 'scheduler', name: 'kube-scheduler', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Assigns Pods to best Worker Node.', analogy: 'Hotel Concierge.', whyItMatters: ['Evaluates CPU/RAM constraints.'], keyAttributes: [{ label: 'Algorithm', description: 'Filter -> Score' }], kubectlCommands: [{ command: 'kubectl get events', explanation: 'Events' }], yamlSnippet: `nodeSelector:\n  disktype: ssd`, iconName: 'compass', color: '#a855f7' },
-      'controller-manager': { id: 'controller-manager', name: 'kube-controller-manager', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Reconciles current state with desired state.', analogy: 'Autopilot Thermostat.', whyItMatters: ['Guarantees replica count.'], keyAttributes: [{ label: 'Loop', description: 'Observe -> Compare -> Reconcile' }], kubectlCommands: [{ command: 'kubectl get deployments -w', explanation: 'Watch rollouts' }], yamlSnippet: `replicas: 3`, iconName: 'cpu', color: '#ec4899' },
-      'node': { id: 'node', name: 'Worker Node', kind: 'Compute', category: 'compute', shortDescription: 'Machine that runs containerized workloads.', analogy: 'Cargo ship deck.', whyItMatters: ['Provides CPU and RAM.'], keyAttributes: [{ label: 'Daemons', description: 'kubelet, kube-proxy' }], kubectlCommands: [{ command: 'kubectl get nodes', explanation: 'List nodes' }], yamlSnippet: `kind: Node\nmetadata:\n  name: worker-1`, iconName: 'server', color: '#3b82f6' },
-      'pod': { id: 'pod', name: 'Pod', kind: 'Workload', category: 'workload', shortDescription: 'Smallest deployable unit with containers.', analogy: 'Shipping container hold.', whyItMatters: ['Has unique IP; shares localhost.'], keyAttributes: [{ label: 'IP', description: 'Unique per pod' }], kubectlCommands: [{ command: 'kubectl get pods -o wide', explanation: 'List pods' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: web`, iconName: 'box', color: '#10b981' },
-      'service': { id: 'service', name: 'Service', kind: 'Networking', category: 'networking', shortDescription: 'Permanent virtual IP & load balancer for Pods.', analogy: 'Reception desk with phone number.', whyItMatters: ['Decouples client from shifting pod IPs.'], keyAttributes: [{ label: 'Types', description: 'ClusterIP, NodePort, LoadBalancer' }], kubectlCommands: [{ command: 'kubectl get svc', explanation: 'List services' }], yamlSnippet: `kind: Service\nmetadata:\n  name: web-svc`, iconName: 'share2', color: '#f59e0b' },
-      'ingress': { id: 'ingress', name: 'Ingress Controller', kind: 'Networking', category: 'networking', shortDescription: 'Layer 7 HTTP entry point and routing.', analogy: 'Grand directory entrance.', whyItMatters: ['Consolidates routing behind 1 public IP.'], keyAttributes: [{ label: 'Layer', description: 'HTTP/HTTPS L7' }], kubectlCommands: [{ command: 'kubectl get ingress', explanation: 'List ingress' }], yamlSnippet: `kind: Ingress\nmetadata:\n  name: ingress`, iconName: 'globe', color: '#10b981' }
+      'api-server': { id: 'api-server', name: 'kube-apiserver', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Central gateway and REST API hub of the cluster.', analogy: 'Airport Control Tower.', whyItMatters: ['Authenticates and coordinates all cluster operations.'], keyAttributes: [{ label: 'Port', description: '6443' }], kubectlCommands: [{ command: 'kubectl cluster-info', explanation: 'Cluster address' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: kube-apiserver`, iconName: 'server', color: '#3b82f6' },
+      'etcd': { id: 'etcd', name: 'etcd Key-Value Store', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Consistent distributed state database.', analogy: 'Master permanent ledger of truth.', whyItMatters: ['Holds the state of all resources.'], keyAttributes: [{ label: 'Consensus', description: 'Raft' }], kubectlCommands: [{ command: 'etcdctl member list', explanation: 'List peers' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: etcd`, iconName: 'database', color: '#06b6d4' },
+      'scheduler': { id: 'scheduler', name: 'kube-scheduler', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Watches for unscheduled Pods and assigns them to the best Worker Node.', analogy: 'Hotel Concierge.', whyItMatters: ['Evaluates CPU/RAM constraints.'], keyAttributes: [{ label: 'Algorithm', description: 'Filter -> Score' }], kubectlCommands: [{ command: 'kubectl get events', explanation: 'Placement events' }], yamlSnippet: `nodeSelector:\n  disktype: ssd`, iconName: 'compass', color: '#a855f7' },
+      'controller-manager': { id: 'controller-manager', name: 'kube-controller-manager', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Runs continuous reconciliation loops.', analogy: 'Thermostat that adjusts reality to desired state.', whyItMatters: ['Recreates dead pods automatically.'], keyAttributes: [{ label: 'Design', description: 'Declarative reconciliation' }], kubectlCommands: [{ command: 'kubectl get deployments -w', explanation: 'Watch rollouts' }], yamlSnippet: `replicas: 4`, iconName: 'cpu', color: '#ec4899' },
+      'node': { id: 'node', name: 'Worker Node', kind: 'Compute Infrastructure', category: 'compute', shortDescription: 'Physical or virtual server providing compute (CPU/RAM).', analogy: 'Cargo ship holding shipping containers (Pods).', whyItMatters: ['Runs kubelet, container runtime, and kube-proxy.'], keyAttributes: [{ label: 'Daemons', description: 'kubelet, kube-proxy' }], kubectlCommands: [{ command: 'kubectl get nodes -o wide', explanation: 'List nodes' }, { command: 'kubectl drain <node-name>', explanation: 'Evacuate pods' }], yamlSnippet: `kind: Node\nmetadata:\n  name: worker-01`, iconName: 'server', color: '#3b82f6' },
+      'pod': { id: 'pod', name: 'Pod', kind: 'Workload Primitive', category: 'workload', shortDescription: 'Smallest deployable unit containing one or more containers.', analogy: 'Shipping container hold sharing network and volumes.', whyItMatters: ['Every Pod gets a unique IP and shares localhost.'], keyAttributes: [{ label: 'Lifecycle', description: 'Pending -> ContainerCreating -> Running' }], kubectlCommands: [{ command: 'kubectl get pods -o wide', explanation: 'List pods' }, { command: 'kubectl logs <pod-name>', explanation: 'Container logs' }], yamlSnippet: `apiVersion: v1\nkind: Pod\nmetadata:\n  name: web`, iconName: 'box', color: '#10b981' },
+      'deployment': { id: 'deployment', name: 'Deployment', kind: 'Workload Controller', category: 'workload', shortDescription: 'Declarative controller managing Pod replicas and rolling updates.', analogy: 'Fleet Commander.', whyItMatters: ['Guarantees replica count and zero-downtime rollouts.'], keyAttributes: [{ label: 'Strategy', description: 'RollingUpdate' }], kubectlCommands: [{ command: 'kubectl scale deployment <name> --replicas=5', explanation: 'Scale replicas' }], yamlSnippet: `apiVersion: apps/v1\nkind: Deployment`, iconName: 'layers', color: '#06b6d4' },
+      'service': { id: 'service', name: 'Service', kind: 'Networking Primitive', category: 'networking', shortDescription: 'Permanent virtual IP and load balancer for dynamic Pods.', analogy: 'Reception desk with a stable phone number.', whyItMatters: ['Decouples consumers from shifting Pod IPs.'], keyAttributes: [{ label: 'Types', description: 'ClusterIP, NodePort, LoadBalancer, Headless' }], kubectlCommands: [{ command: 'kubectl get svc', explanation: 'List services' }], yamlSnippet: `apiVersion: v1\nkind: Service`, iconName: 'share2', color: '#f59e0b' },
+      'ingress': { id: 'ingress', name: 'Ingress Controller', kind: 'Networking Primitive', category: 'networking', shortDescription: 'Layer 7 HTTP/HTTPS entry point routing hostnames and paths.', analogy: 'Grand directory entrance of a skyscraper.', whyItMatters: ['Exposes multiple internal services behind 1 public IP with TLS.'], keyAttributes: [{ label: 'Layer', description: 'Application L7' }], kubectlCommands: [{ command: 'kubectl get ingress', explanation: 'List ingress' }], yamlSnippet: `kind: Ingress\nmetadata:\n  name: main-ingress`, iconName: 'globe', color: '#10b981' },
+      'configmap': { id: 'configmap', name: 'ConfigMap', kind: 'Config Object', category: 'config', shortDescription: 'Decoupled plain text configuration key-value pairs.', analogy: '.env configuration file.', whyItMatters: ['Separates app code from environment configs.'], keyAttributes: [{ label: 'Limit', description: '1 MiB' }], kubectlCommands: [{ command: 'kubectl create configmap app-config', explanation: 'Create config' }], yamlSnippet: `kind: ConfigMap\nmetadata:\n  name: config`, iconName: 'sliders', color: '#06b6d4' },
+      'secret': { id: 'secret', name: 'Secret', kind: 'Config Object', category: 'config', shortDescription: 'Stores sensitive passwords, tokens, and keys in tmpfs memory.', analogy: 'Digital Safety Deposit Box.', whyItMatters: ['Keeps credentials out of container images.'], keyAttributes: [{ label: 'Storage', description: 'In-memory tmpfs' }], kubectlCommands: [{ command: 'kubectl get secrets', explanation: 'List secrets' }], yamlSnippet: `kind: Secret\nmetadata:\n  name: db-auth`, iconName: 'lock', color: '#ef4444' },
+      'pvc': { id: 'pvc', name: 'PersistentVolumeClaim (PVC)', kind: 'Storage Primitive', category: 'storage', shortDescription: 'Storage request ticket bound to persistent physical storage.', analogy: 'Voucher for a hard drive.', whyItMatters: ['Allows database containers to retain data after restarts.'], keyAttributes: [{ label: 'Mode', description: 'ReadWriteOnce' }], kubectlCommands: [{ command: 'kubectl get pvc', explanation: 'List claims' }], yamlSnippet: `kind: PersistentVolumeClaim`, iconName: 'hardDrive', color: '#8b5cf6' },
+      'hpa': { id: 'hpa', name: 'HorizontalPodAutoscaler (HPA)', kind: 'Scalability', category: 'scaling', shortDescription: 'Automatically scales pod replicas based on observed CPU load.', analogy: 'Elastic cashiers team called during rushes.', whyItMatters: ['Handles peak traffic spikes automatically.'], keyAttributes: [{ label: 'Target', description: 'CPU / RAM %' }], kubectlCommands: [{ command: 'kubectl get hpa', explanation: 'List HPA' }], yamlSnippet: `kind: HorizontalPodAutoscaler`, iconName: 'trendingUp', color: '#10b981' }
     };
 
-    // --- PRESETS ---
+    // --- PRESET ARCHITECTURES ---
     const PRESETS = [
       {
         id: 'multi-namespace-cluster',
@@ -222,10 +183,10 @@ spec:
             { id: 'dep-db', name: 'postgres-db', namespace: 'database', replicas: 1, selector: { app: 'postgres' }, container: { name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }, strategy: 'Recreate', configMaps: [], secrets: ['sec-db-auth'] }
           ],
           pods: [
-            { id: 'pod-web-1', name: 'web-frontend-9f7b6-x1', deploymentId: 'dep-webapp', nodeId: 'node-worker-1', namespace: 'production', status: 'Running', ip: '10.244.1.11', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 24, memoryUsage: 140, labels: { app: 'webapp' } },
-            { id: 'pod-web-2', name: 'web-frontend-9f7b6-x2', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.14', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 28, memoryUsage: 148, labels: { app: 'webapp' } },
-            { id: 'pod-web-3', name: 'web-frontend-9f7b6-x3', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.19', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 22, memoryUsage: 130, labels: { app: 'webapp' } },
-            { id: 'pod-db-0', name: 'postgres-db-0', deploymentId: 'dep-db', nodeId: 'node-worker-1', namespace: 'database', status: 'Running', ip: '10.244.1.99', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, labels: { app: 'postgres' } }
+            { id: 'pod-web-1', name: 'web-frontend-9f7b6-x1', deploymentId: 'dep-webapp', nodeId: 'node-worker-1', namespace: 'production', status: 'Running', ip: '10.244.1.11', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 24, memoryUsage: 140, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-web-2', name: 'web-frontend-9f7b6-x2', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.14', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 28, memoryUsage: 148, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-web-3', name: 'web-frontend-9f7b6-x3', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.19', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 22, memoryUsage: 130, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-db-0', name: 'postgres-db-0', deploymentId: 'dep-db', nodeId: 'node-worker-1', namespace: 'database', status: 'Running', ip: '10.244.1.99', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-db-auth'], labels: { app: 'postgres' } }
           ],
           services: [
             { id: 'svc-web', name: 'web-service', namespace: 'production', type: 'ClusterIP', clusterIP: '10.96.14.88', port: 80, targetPort: 8080, selector: { app: 'webapp' }, matchedPodIds: ['pod-web-1', 'pod-web-2', 'pod-web-3'] },
@@ -239,9 +200,62 @@ spec:
             ],
             tlsEnabled: true
           },
-          configMaps: [{ id: 'cm-app-settings', name: 'app-settings', namespace: 'production', data: { ENV: 'production' } }],
-          secrets: [{ id: 'sec-db-auth', name: 'db-credentials', namespace: 'database', type: 'Opaque', data: { PASSWORD: 'secretpassword2026' } }],
+          configMaps: [{ id: 'cm-app-settings', name: 'app-settings', namespace: 'production', data: { FEATURE_DARK_MODE: 'true', DB_FQDN: 'postgres-db.database.svc.cluster.local' } }],
+          secrets: [{ id: 'sec-db-auth', name: 'db-credentials', namespace: 'database', type: 'Opaque', data: { POSTGRES_PASSWORD: 'SuperSecurePassword2026!' } }],
           pvcs: []
+        }
+      },
+      {
+        id: 'high-availability-hpa',
+        name: '2. High Availability & Auto-Scaling (HPA)',
+        badge: 'Resilient',
+        state: {
+          activeNamespace: 'default',
+          nodes: [
+            { id: 'node-worker-1', name: 'worker-zone-a', type: 'worker', status: 'Ready', ip: '10.0.1.10', zone: 'us-east-1a', cpuTotal: 8, cpuAllocated: 0.5, memTotal: 16384, memAllocated: 512, pods: ['pod-hpa-1'] },
+            { id: 'node-worker-2', name: 'worker-zone-b', type: 'worker', status: 'Ready', ip: '10.0.2.20', zone: 'us-east-1b', cpuTotal: 8, cpuAllocated: 0.5, memTotal: 16384, memAllocated: 512, pods: ['pod-hpa-2'] }
+          ],
+          deployments: [
+            { id: 'dep-api-hpa', name: 'payment-api', namespace: 'default', replicas: 2, selector: { app: 'payment-api' }, container: { name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }, strategy: 'RollingUpdate', configMaps: [], secrets: [], hpaEnabled: true }
+          ],
+          pods: [
+            { id: 'pod-hpa-1', name: 'payment-api-6b9f8-1a', deploymentId: 'dep-api-hpa', nodeId: 'node-worker-1', namespace: 'default', status: 'Running', ip: '10.244.1.20', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 45, memoryUsage: 310, labels: { app: 'payment-api' } },
+            { id: 'pod-hpa-2', name: 'payment-api-6b9f8-2b', deploymentId: 'dep-api-hpa', nodeId: 'node-worker-2', namespace: 'default', status: 'Running', ip: '10.244.2.35', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 50, memoryUsage: 320, labels: { app: 'payment-api' } }
+          ],
+          services: [
+            { id: 'svc-payment', name: 'payment-service', namespace: 'default', type: 'LoadBalancer', clusterIP: '10.96.88.190', externalIP: '34.120.45.99', port: 80, targetPort: 4000, selector: { app: 'payment-api' }, matchedPodIds: ['pod-hpa-1', 'pod-hpa-2'] }
+          ],
+          secrets: [],
+          pvcs: [],
+          configMaps: [],
+          hpa: { id: 'hpa-api', name: 'payment-api-hpa', namespace: 'default', targetDeploymentId: 'dep-api-hpa', minReplicas: 2, maxReplicas: 8, targetCpuUtilization: 70, currentCpuUtilization: 46 }
+        }
+      },
+      {
+        id: 'stateful-database',
+        name: '3. Stateful Database with PVC & Secret',
+        badge: 'Database',
+        state: {
+          activeNamespace: 'database',
+          nodes: [
+            { id: 'node-worker-db', name: 'storage-node-primary', type: 'worker', status: 'Ready', ip: '192.168.2.50', zone: 'us-east-1a', cpuTotal: 8, cpuAllocated: 1.0, memTotal: 16384, memAllocated: 2048, pods: ['pod-postgres-0'] }
+          ],
+          deployments: [
+            { id: 'dep-postgres', name: 'postgres-db', namespace: 'database', replicas: 1, selector: { app: 'postgres' }, container: { name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 2048 }, strategy: 'Recreate', configMaps: [], secrets: ['sec-pg-auth'], pvc: 'pvc-postgres-data' }
+          ],
+          pods: [
+            { id: 'pod-postgres-0', name: 'postgres-db-0', deploymentId: 'dep-postgres', nodeId: 'node-worker-db', namespace: 'database', status: 'Running', ip: '10.244.5.1', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 2048 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-pg-auth'], pvcRefs: ['pvc-postgres-data'], labels: { app: 'postgres' } }
+          ],
+          services: [
+            { id: 'svc-postgres-headless', name: 'postgres-headless', namespace: 'database', type: 'Headless', clusterIP: 'None', port: 5432, targetPort: 5432, selector: { app: 'postgres' }, matchedPodIds: ['pod-postgres-0'] }
+          ],
+          configMaps: [],
+          secrets: [
+            { id: 'sec-pg-auth', name: 'postgres-credentials', namespace: 'database', type: 'Opaque', data: { POSTGRES_PASSWORD: 'SuperStrongDBPassword2026!' } }
+          ],
+          pvcs: [
+            { id: 'pvc-postgres-data', name: 'postgres-data-pvc', namespace: 'database', capacity: '50Gi', accessModes: ['ReadWriteOnce'], storageClass: 'fast-ssd-sc', status: 'Bound', boundPvId: 'pv-ebs-vol-98124' }
+          ]
         }
       }
     ];
@@ -253,11 +267,20 @@ spec:
       const [selectedElement, setSelectedElement] = useState(null);
       const [selectedNamespaceFilter, setSelectedNamespaceFilter] = useState('all');
       const [namespacesList, setNamespacesList] = useState(['default', 'production', 'database', 'monitoring', 'kube-system']);
+      const [cpuLoad, setCpuLoad] = useState(30);
+      const [showSecretMap, setShowSecretMap] = useState({});
+
+      // Builder Modals
+      const [activeModal, setActiveModal] = useState(null); // 'deployment' | 'service' | 'ingress' | 'namespace' | 'config'
+      const [depForm, setDepForm] = useState({ name: 'api-server', image: 'node:20-alpine', port: 3000, replicas: 2, ns: 'production' });
+      const [svcForm, setSvcForm] = useState({ name: 'api-svc', type: 'ClusterIP', port: 80, targetPort: 3000, key: 'app', val: 'api-server', ns: 'production' });
+      const [ingForm, setIngForm] = useState({ host: 'app.example.com', path: '/', svc: 'web-service', port: 80, ns: 'production' });
+      const [newNsName, setNewNsName] = useState('');
 
       // Cluster State
       const [cluster, setCluster] = useState(() => JSON.parse(JSON.stringify(PRESETS[0].state)));
       const [logs, setLogs] = useState([
-        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with multi-namespace isolation.' }
+        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized.' }
       ]);
 
       // Traffic Screen Specific State
@@ -265,8 +288,7 @@ spec:
       const [trafficPath, setTrafficPath] = useState('/');
       const [trafficHost, setTrafficHost] = useState('app.example.com');
       const [isStreaming, setIsStreaming] = useState(false);
-      const [streamSpeed, setStreamSpeed] = useState(2); // req per sec
-      const [activeHop, setActiveHop] = useState(0); // 0: Idle, 1: Client, 2: Ingress, 3: Service, 4: Pod, 5: Response
+      const [activeHop, setActiveHop] = useState(0);
       const [lastResponse, setLastResponse] = useState(null);
       const [selectedPodForTraffic, setSelectedPodForTraffic] = useState(null);
       const [podHitStats, setPodHitStats] = useState({});
@@ -294,7 +316,33 @@ spec:
         addLog('API-Server', 'info', `Loaded architecture preset: "${p.name}".`);
       };
 
-      // Recalculate Node Pod allocations & Service Endpoints
+      // Filtered views based on selectedNamespaceFilter
+      const visiblePods = useMemo(() => {
+        if (selectedNamespaceFilter === 'all') return cluster.pods;
+        return cluster.pods.filter(p => p.namespace === selectedNamespaceFilter);
+      }, [cluster.pods, selectedNamespaceFilter]);
+
+      const visibleServices = useMemo(() => {
+        if (selectedNamespaceFilter === 'all') return cluster.services;
+        return cluster.services.filter(s => s.namespace === selectedNamespaceFilter);
+      }, [cluster.services, selectedNamespaceFilter]);
+
+      const visibleConfigMaps = useMemo(() => {
+        if (selectedNamespaceFilter === 'all') return cluster.configMaps;
+        return cluster.configMaps.filter(c => c.namespace === selectedNamespaceFilter);
+      }, [cluster.configMaps, selectedNamespaceFilter]);
+
+      const visibleSecrets = useMemo(() => {
+        if (selectedNamespaceFilter === 'all') return cluster.secrets;
+        return cluster.secrets.filter(s => s.namespace === selectedNamespaceFilter);
+      }, [cluster.secrets, selectedNamespaceFilter]);
+
+      const visiblePvcs = useMemo(() => {
+        if (selectedNamespaceFilter === 'all') return cluster.pvcs;
+        return cluster.pvcs.filter(p => p.namespace === selectedNamespaceFilter);
+      }, [cluster.pvcs, selectedNamespaceFilter]);
+
+      // Service and Node mapping effects
       useEffect(() => {
         setCluster(prev => {
           const updatedNodes = prev.nodes.map(node => {
@@ -323,126 +371,20 @@ spec:
         });
       }, [cluster.pods.length, cluster.deployments.length]);
 
-      // --- DEDICATED TRAFFIC DISPATCH LOGIC ---
-      const dispatchPacket = useCallback((stepByStep = false) => {
-        const matchingRule = cluster.ingress?.rules.find(r => r.path === trafficPath || trafficPath.startsWith(r.path));
-        const svc = matchingRule 
-          ? cluster.services.find(s => s.name === matchingRule.serviceName) 
-          : cluster.services[0];
-
-        // 1. Hop: Client (0ms)
-        setActiveHop(1);
-
-        setTimeout(() => {
-          // 2. Hop: Ingress
-          setActiveHop(2);
-
-          if (!matchingRule && trafficPath === '/unknown') {
-            // Simulated 404 Route Not Found
-            setTimeout(() => {
-              setActiveHop(5);
-              setLastResponse({
-                status: 404,
-                statusText: '404 Not Found',
-                podName: 'None (Rejected at Ingress)',
-                latency: 1.2,
-                dnat: 'No Route Matched',
-                body: { error: 'Path not found on Ingress controller', host: trafficHost, path: trafficPath }
-              });
-              addLog('Ingress', 'warning', `404 Not Found: Path "${trafficPath}" has no matching backend service.`);
-            }, 500);
-            return;
-          }
-
-          setTimeout(() => {
-            // 3. Hop: Service / kube-proxy
-            setActiveHop(3);
-
-            const healthyPods = cluster.pods.filter(p => svc && svc.matchedPodIds.includes(p.id) && p.status === 'Running');
-
-            if (!svc || healthyPods.length === 0) {
-              // Simulated 503 No Endpoints
-              setTimeout(() => {
-                setActiveHop(5);
-                setLastResponse({
-                  status: 503,
-                  statusText: '503 Service Unavailable',
-                  podName: 'None (Zero Endpoints)',
-                  latency: 2.1,
-                  dnat: 'Failed - 0 Matching Healthy Pods',
-                  body: { error: 'No healthy pod endpoints available to serve request', service: svc?.name || 'none' }
-                });
-                addLog('Kube-Proxy', 'error', '503 Service Unavailable: No healthy pod endpoints matched service selector.');
-              }, 500);
-              return;
-            }
-
-            // Pick Pod (Round-Robin / Load-Balanced)
-            const chosenPod = healthyPods[Math.floor(Math.random() * healthyPods.length)];
-            setSelectedPodForTraffic(chosenPod);
-
-            setTimeout(() => {
-              // 4. Hop: Pod Socket Processing
-              setActiveHop(4);
-
-              // Update metrics
-              setPodHitStats(prev => ({
-                ...prev,
-                [chosenPod.id]: (prev[chosenPod.id] || 0) + 1
-              }));
-              setTotalTrafficCount(prev => prev + 1);
-
-              setTimeout(() => {
-                // 5. Hop: Response Return
-                setActiveHop(5);
-                const latency = Number((Math.random() * 2 + 2.5).toFixed(1));
-                setLastResponse({
-                  status: 200,
-                  statusText: '200 OK',
-                  podName: chosenPod.name,
-                  podIp: chosenPod.ip,
-                  nodeId: chosenPod.nodeId,
-                  namespace: chosenPod.namespace,
-                  latency,
-                  dnat: `${svc.clusterIP}:${svc.port} → ${chosenPod.ip}:${chosenPod.containers[0]?.port || 8080}`,
-                  body: {
-                    message: "Request successfully processed by container",
-                    servedByPod: chosenPod.name,
-                    podIP: chosenPod.ip,
-                    workerNode: chosenPod.nodeId,
-                    namespace: chosenPod.namespace,
-                    timestamp: new Date().toISOString()
-                  }
-                });
-                addLog('Kube-Proxy', 'success', `200 OK: ${trafficMethod} ${trafficPath} served by [${chosenPod.namespace}]/${chosenPod.name} (${latency}ms).`);
-              }, 400);
-            }, 400);
-          }, 450);
-        }, 400);
-      }, [cluster, trafficHost, trafficPath, trafficMethod, addLog]);
-
-      // Streaming Interval Effect
-      useEffect(() => {
-        if (!isStreaming) return;
-        const interval = setInterval(() => {
-          dispatchPacket(false);
-        }, 1000 / streamSpeed);
-        return () => clearInterval(interval);
-      }, [isStreaming, streamSpeed, dispatchPacket]);
-
-      // Kill Pod action
+      // --- SIMULATION & CHAOS ACTIONS ---
       const killPod = (podId) => {
         const pod = cluster.pods.find(p => p.id === podId);
         if (!pod) return;
-        addLog('ChaosMonkey', 'error', `Killed Pod "${pod.name}". Self-healing triggered.`);
+        addLog('ChaosMonkey', 'error', `Killed Pod "${pod.name}" in namespace "${pod.namespace}". Simulating failure.`);
         setCluster(prev => ({
           ...prev,
           pods: prev.pods.map(p => p.id === podId ? { ...p, status: 'CrashLoopBackOff' } : p)
         }));
+
         setTimeout(() => {
           setCluster(prev => {
             const dead = prev.pods.find(p => p.id === podId);
-            if (!dead || !dead.deploymentId) return prev;
+            if (!dead || !dead.deploymentId) return { ...prev, pods: prev.pods.filter(p => p.id !== podId) };
             const dep = prev.deployments.find(d => d.id === dead.deploymentId);
             const readyNodes = prev.nodes.filter(n => n.status === 'Ready');
             const target = readyNodes[Math.floor(Math.random() * readyNodes.length)] || prev.nodes[0];
@@ -462,11 +404,264 @@ spec:
             };
             return { ...prev, pods: [...prev.pods.filter(p => p.id !== podId), replacement] };
           });
+          addLog('ControllerManager', 'warning', `Self-healing: Recreated replica in namespace "${pod.namespace}".`);
+
           setTimeout(() => {
             setCluster(prev => ({ ...prev, pods: prev.pods.map(p => p.status === 'ContainerCreating' ? { ...p, status: 'Running' } : p) }));
-            addLog('Kubelet', 'success', 'Replacement pod passed health probes.');
+            addLog('Kubelet', 'success', 'Replacement pod passed health checks.');
           }, 1200);
         }, 1000);
+      };
+
+      const scaleDeployment = (deploymentId, targetCount) => {
+        setCluster(prev => {
+          const dep = prev.deployments.find(d => d.id === deploymentId);
+          if (!dep) return prev;
+          const currentPods = prev.pods.filter(p => p.deploymentId === deploymentId && p.status !== 'Terminating');
+          const readyNodes = prev.nodes.filter(n => n.status === 'Ready');
+          const diff = targetCount - currentPods.length;
+          let updatedPods = [...prev.pods];
+
+          if (diff > 0 && readyNodes.length > 0) {
+            for (let i = 0; i < diff; i++) {
+              const targetNode = readyNodes[(currentPods.length + i) % readyNodes.length];
+              updatedPods.push({
+                id: `pod-${dep.name}-${Math.random().toString(36).substring(2, 6)}`,
+                name: `${dep.name}-${Math.random().toString(36).substring(2, 7)}-${currentPods.length + i + 1}`,
+                deploymentId: dep.id,
+                nodeId: targetNode.id,
+                namespace: dep.namespace,
+                status: 'Running',
+                ip: `10.244.${(i % 3) + 1}.${Math.floor(Math.random() * 200) + 10}`,
+                containers: [dep.container],
+                restartCount: 0,
+                cpuUsage: 18,
+                memoryUsage: 90,
+                labels: dep.selector
+              });
+            }
+          } else if (diff < 0) {
+            const toRemove = currentPods.slice(0, Math.abs(diff)).map(p => p.id);
+            updatedPods = updatedPods.filter(p => !toRemove.includes(p.id));
+          }
+
+          return {
+            ...prev,
+            deployments: prev.deployments.map(d => d.id === deploymentId ? { ...d, replicas: targetCount } : d),
+            pods: updatedPods
+          };
+        });
+        addLog('ControllerManager', 'info', `Deployment scaled to ${targetCount} replicas.`);
+      };
+
+      const toggleCpuSpike = () => {
+        const nextLoad = cpuLoad >= 70 ? 25 : 85;
+        setCpuLoad(nextLoad);
+        addLog('HPA', nextLoad >= 70 ? 'warning' : 'info', `Cluster CPU load set to ${nextLoad}%.`);
+        if (cluster.hpa && nextLoad >= cluster.hpa.targetCpuUtilization) {
+          const dep = cluster.deployments.find(d => d.id === cluster.hpa.targetDeploymentId);
+          if (dep && dep.replicas < cluster.hpa.maxReplicas) {
+            const scaled = Math.min(cluster.hpa.maxReplicas, dep.replicas + 2);
+            setTimeout(() => {
+              scaleDeployment(dep.id, scaled);
+              addLog('HPA', 'success', `Autoscaler scaled "${dep.name}" to ${scaled} replicas!`);
+              if (window.confetti) window.confetti({ particleCount: 70, spread: 70 });
+            }, 1000);
+          }
+        }
+      };
+
+      const addNode = () => {
+        const nextIdx = cluster.nodes.length + 1;
+        const zones = ['us-east-1a', 'us-east-1b', 'us-east-1c', 'us-west-2a'];
+        const newNode = {
+          id: `node-worker-${Date.now().toString().slice(-4)}`,
+          name: `worker-node-${nextIdx}`,
+          type: 'worker',
+          status: 'Ready',
+          ip: `192.168.1.${100 + nextIdx}`,
+          zone: zones[nextIdx % zones.length],
+          cpuTotal: 8,
+          cpuAllocated: 0,
+          memTotal: 16384,
+          memAllocated: 0,
+          pods: []
+        };
+        setCluster(prev => ({ ...prev, nodes: [...prev.nodes, newNode] }));
+        addLog('API-Server', 'success', `Worker Node "${newNode.name}" joined the cluster.`);
+      };
+
+      const drainNode = (nodeId) => {
+        setCluster(prev => {
+          const available = prev.nodes.filter(n => n.id !== nodeId && n.status === 'Ready');
+          if (available.length === 0) return prev;
+          const updatedPods = prev.pods.map(pod => {
+            if (pod.nodeId === nodeId) {
+              const target = available[Math.floor(Math.random() * available.length)];
+              return { ...pod, nodeId: target.id };
+            }
+            return pod;
+          });
+          return {
+            ...prev,
+            nodes: prev.nodes.map(n => n.id === nodeId ? { ...n, status: 'Cordoned', pods: [] } : n),
+            pods: updatedPods
+          };
+        });
+        addLog('ControllerManager', 'warning', 'Drained node: Evacuated all pods to remaining healthy nodes.');
+      };
+
+      // --- DEDICATED TRAFFIC PIPELINE DISPATCH ---
+      const dispatchPacket = useCallback(() => {
+        const matchingRule = cluster.ingress?.rules.find(r => r.path === trafficPath || trafficPath.startsWith(r.path));
+        const svc = matchingRule 
+          ? cluster.services.find(s => s.name === matchingRule.serviceName) 
+          : cluster.services[0];
+
+        setActiveHop(1); // 1. Client
+
+        setTimeout(() => {
+          setActiveHop(2); // 2. Ingress
+
+          if (!matchingRule && trafficPath === '/unknown') {
+            setTimeout(() => {
+              setActiveHop(5);
+              setLastResponse({
+                status: 404,
+                statusText: '404 Not Found',
+                podName: 'None (Rejected at Ingress)',
+                latency: 1.2,
+                dnat: 'No Route Matched',
+                body: { error: 'Path not found on Ingress controller', host: trafficHost, path: trafficPath }
+              });
+              addLog('Ingress', 'warning', `404 Not Found: Path "${trafficPath}" has no backend.`);
+            }, 400);
+            return;
+          }
+
+          setTimeout(() => {
+            setActiveHop(3); // 3. Service / kube-proxy
+            const healthyPods = cluster.pods.filter(p => svc && svc.matchedPodIds.includes(p.id) && p.status === 'Running');
+
+            if (!svc || healthyPods.length === 0) {
+              setTimeout(() => {
+                setActiveHop(5);
+                setLastResponse({
+                  status: 503,
+                  statusText: '503 Service Unavailable',
+                  podName: 'None (Zero Endpoints)',
+                  latency: 2.1,
+                  dnat: 'Failed - 0 Matching Healthy Pods',
+                  body: { error: 'No healthy pod endpoints available', service: svc?.name || 'none' }
+                });
+                addLog('Kube-Proxy', 'error', '503 Service Unavailable: No healthy pod endpoints.');
+              }, 400);
+              return;
+            }
+
+            const chosenPod = healthyPods[Math.floor(Math.random() * healthyPods.length)];
+            setSelectedPodForTraffic(chosenPod);
+
+            setTimeout(() => {
+              setActiveHop(4); // 4. Target Pod
+              setPodHitStats(prev => ({ ...prev, [chosenPod.id]: (prev[chosenPod.id] || 0) + 1 }));
+              setTotalTrafficCount(prev => prev + 1);
+
+              setTimeout(() => {
+                setActiveHop(5); // 5. Response Return
+                const latency = Number((Math.random() * 2 + 2.5).toFixed(1));
+                setLastResponse({
+                  status: 200,
+                  statusText: '200 OK',
+                  podName: chosenPod.name,
+                  podIp: chosenPod.ip,
+                  nodeId: chosenPod.nodeId,
+                  namespace: chosenPod.namespace,
+                  latency,
+                  dnat: `${svc.clusterIP}:${svc.port} → ${chosenPod.ip}:${chosenPod.containers[0]?.port || 8080}`,
+                  body: {
+                    message: "Request successfully served by container",
+                    servedByPod: chosenPod.name,
+                    podIP: chosenPod.ip,
+                    workerNode: chosenPod.nodeId,
+                    namespace: chosenPod.namespace,
+                    timestamp: new Date().toISOString()
+                  }
+                });
+                addLog('Kube-Proxy', 'success', `200 OK: ${trafficMethod} ${trafficPath} served by [${chosenPod.namespace}]/${chosenPod.name} (${latency}ms).`);
+              }, 350);
+            }, 350);
+          }, 350);
+        }, 350);
+      }, [cluster, trafficHost, trafficPath, trafficMethod, addLog]);
+
+      useEffect(() => {
+        if (!isStreaming) return;
+        const interval = setInterval(dispatchPacket, 600);
+        return () => clearInterval(interval);
+      }, [isStreaming, dispatchPacket]);
+
+      // --- BUILDER HANDLERS ---
+      const handleCreateNamespace = (e) => {
+        e.preventDefault();
+        if (!newNsName.trim()) return;
+        const formatted = newNsName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        if (!namespacesList.includes(formatted)) {
+          setNamespacesList(prev => [...prev, formatted]);
+          setSelectedNamespaceFilter(formatted);
+          addLog('API-Server', 'success', `Created Namespace "${formatted}".`);
+        }
+        setNewNsName('');
+        setActiveModal(null);
+      };
+
+      const handleCreateDeployment = (e) => {
+        e.preventDefault();
+        const depId = `dep-${Date.now().toString().slice(-4)}`;
+        const selector = { app: depForm.name.toLowerCase().replace(/\s+/g, '-') };
+        const readyNodes = cluster.nodes.filter(n => n.status === 'Ready');
+        if (readyNodes.length === 0) return;
+
+        const newPods = [];
+        for (let i = 0; i < depForm.replicas; i++) {
+          const targetNode = readyNodes[i % readyNodes.length];
+          newPods.push({
+            id: `pod-${depForm.name.toLowerCase()}-${Math.random().toString(36).substring(2, 6)}`,
+            name: `${depForm.name.toLowerCase()}-${Math.random().toString(36).substring(2, 7)}-${i + 1}`,
+            deploymentId: depId,
+            nodeId: targetNode.id,
+            namespace: depForm.ns,
+            status: 'Running',
+            ip: `10.244.1.${Math.floor(Math.random() * 200) + 10}`,
+            containers: [{ name: depForm.name, image: depForm.image, port: Number(depForm.port), cpuRequest: 0.2, memRequest: 128 }],
+            restartCount: 0,
+            cpuUsage: 15,
+            memoryUsage: 80,
+            labels: selector
+          });
+        }
+
+        setCluster(prev => ({
+          ...prev,
+          deployments: [...prev.deployments, { id: depId, name: depForm.name, namespace: depForm.ns, replicas: Number(depForm.replicas), selector, container: { name: depForm.name, image: depForm.image, port: Number(depForm.port), cpuRequest: 0.2, memRequest: 128 }, strategy: 'RollingUpdate', configMaps: [], secrets: [] }],
+          pods: [...prev.pods, ...newPods]
+        }));
+        setActiveModal(null);
+        addLog('API-Server', 'success', `Created Deployment "${depForm.name}" in namespace "${depForm.ns}".`);
+      };
+
+      const handleCreateService = (e) => {
+        e.preventDefault();
+        const svcId = `svc-${Date.now().toString().slice(-4)}`;
+        const selector = { [svcForm.key]: svcForm.val };
+        const matched = cluster.pods.filter(p => p.namespace === svcForm.ns && p.labels && p.labels[svcForm.key] === svcForm.val).map(p => p.id);
+
+        setCluster(prev => ({
+          ...prev,
+          services: [...prev.services, { id: svcId, name: svcForm.name, namespace: svcForm.ns, type: svcForm.type, clusterIP: `10.96.${Math.floor(Math.random() * 200)}.${Math.floor(Math.random() * 200)}`, externalIP: svcForm.type === 'LoadBalancer' ? '35.240.88.10' : undefined, port: Number(svcForm.port), targetPort: Number(svcForm.targetPort), selector, matchedPodIds: matched }]
+        }));
+        setActiveModal(null);
+        addLog('API-Server', 'success', `Created Service "${svcForm.name}" in namespace "${svcForm.ns}".`);
       };
 
       // --- GENERATE YAML ---
@@ -478,19 +673,15 @@ spec:
         cluster.services.forEach(svc => {
           chunks.push(`apiVersion: v1\nkind: Service\nmetadata:\n  name: ${svc.name}\n  namespace: ${svc.namespace}\nspec:\n  type: ${svc.type}\n  selector:\n    ${Object.entries(svc.selector).map(([k, v]) => `${k}: ${v}`).join('\n    ')}\n  ports:\n  - port: ${svc.port}\n    targetPort: ${svc.targetPort}`);
         });
-        if (cluster.ingress) {
-          chunks.push(`apiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: ${cluster.ingress.name}\nspec:\n  rules:\n  - host: ${cluster.ingress.rules[0]?.host || 'app.io'}\n    http:\n      paths:\n      - path: /\n        pathType: Prefix\n        backend:\n          service:\n            name: ${cluster.ingress.rules[0]?.serviceName}\n            port:\n              number: 80`);
-        }
         return chunks.join('\n---\n');
       }, [cluster]);
 
       // --- RUN KUBECTL ---
       const runKubectl = (cmdStr) => {
         const parts = cmdStr.trim().split(/\s+/);
-        if (parts[0] !== 'kubectl') return `Command not found: "${parts[0]}". Try "kubectl help".`;
+        if (parts[0] !== 'kubectl') return `Command not found: "${parts[0]}". Type "kubectl help".`;
         const sub = parts[1];
         const res = parts[2];
-
         if (!sub || sub === 'help') return 'Available:\n  kubectl get (pods | nodes | svc | ns | all)\n  kubectl scale deployment <name> --replicas=<num>\n  kubectl delete pod <name>';
         if (sub === 'get' && (res === 'pods' || res === 'pod' || res === 'po')) {
           return `NAMESPACE       NAME                                READY  STATUS    NODE\n` + cluster.pods.map(p => `${p.namespace.padEnd(15)} ${p.name.padEnd(35)} 1/1    ${p.status.padEnd(9)} ${p.nodeId}`).join('\n');
@@ -502,6 +693,36 @@ spec:
           return `NAMESPACE       NAME                 TYPE        CLUSTER-IP       PORT(S)\n` + cluster.services.map(s => `${s.namespace.padEnd(15)} ${s.name.padEnd(20)} ${s.type.padEnd(11)} ${s.clusterIP.padEnd(16)} :${s.port}`).join('\n');
         }
         return `Executed: "${cmdStr}".`;
+      };
+
+      // --- TOOLTIP COMPONENT ---
+      const Tooltip = ({ conceptId, children }) => {
+        const [show, setShow] = useState(false);
+        const c = K8S_CONCEPTS[conceptId];
+        return (
+          <div className="relative inline-block" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+            {children}
+            {show && c && (
+              <div className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-72 p-3 rounded-xl bg-slate-900/95 border border-slate-700 shadow-2xl backdrop-blur-md text-left pointer-events-none text-xs">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-1 mb-1.5">
+                  <div className="flex items-center gap-1.5 font-bold text-white font-mono">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }}></span>
+                    {c.name}
+                  </div>
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-cyan-300 font-mono">{c.kind || c.category}</span>
+                </div>
+                <p className="text-slate-300 text-[11px] mb-1.5">{c.shortDescription}</p>
+                {c.analogy && (
+                  <div className="p-1.5 rounded bg-indigo-950/40 border border-indigo-500/30 text-[10px] text-indigo-200 italic flex items-start gap-1">
+                    <Icon name="sparkles" className="w-3 h-3 text-indigo-400 shrink-0 mt-0.5" />
+                    <span>{c.analogy}</span>
+                  </div>
+                )}
+                <div className="text-[9px] text-cyan-400 mt-1 font-mono text-center">Click element to inspect details</div>
+              </div>
+            )}
+          </div>
+        );
       };
 
       return (
@@ -536,7 +757,6 @@ spec:
                   <span>Visual Canvas</span>
                 </button>
 
-                {/* 🌟 DEDICATED TRAFFIC ROUTE MAP TAB 🌟 */}
                 <button
                   onClick={() => setViewMode('traffic')}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
@@ -580,7 +800,7 @@ spec:
                 </button>
               </div>
 
-              {/* Preset Selector */}
+              {/* Preset Selector & Quick Simulation */}
               <div className="flex items-center gap-2">
                 <label className="text-xs text-slate-400 hidden md:inline">Preset:</label>
                 <select
@@ -592,6 +812,37 @@ spec:
                     <option key={p.id} value={p.id} className="bg-slate-900 text-slate-200">{p.name}</option>
                   ))}
                 </select>
+
+                <button
+                  onClick={() => { setViewMode('traffic'); dispatchPacket(); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all active:scale-95"
+                >
+                  <Icon name="send" className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Send Traffic</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const running = cluster.pods.filter(p => p.status === 'Running');
+                    if (running.length > 0) killPod(running[Math.floor(Math.random() * running.length)].id);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg shadow-rose-600/20 transition-all active:scale-95"
+                  title="Chaos Monkey: Kill random pod to watch self-healing"
+                >
+                  <Icon name="skull" className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Chaos Monkey</span>
+                </button>
+
+                <button
+                  onClick={toggleCpuSpike}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                    cpuLoad >= 70 ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 animate-pulse' : 'bg-slate-800 text-slate-300 border-slate-700'
+                  }`}
+                  title="Simulate CPU Load (Triggers HPA scaling)"
+                >
+                  <Icon name="zap" className="w-3.5 h-3.5 text-amber-400" />
+                  <span>CPU {cpuLoad}%</span>
+                </button>
 
                 <button
                   onClick={() => loadPreset(activePresetId)}
@@ -607,7 +858,443 @@ spec:
           {/* MAIN CONTENT AREA */}
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
             {/* ============================================================== */}
-            {/* 🌟 1. DEDICATED SCREEN: TRAFFIC & NETWORK ROUTE MAP 🌟 */}
+            {/* 1. VISUAL CANVAS VIEW (FULL RICH CLUSTER LAYOUT & BUILDER) */}
+            {/* ============================================================== */}
+            {viewMode === 'canvas' && (
+              <div className="space-y-6 pb-28 animate-fadeIn">
+                {/* Namespace Selector Banner */}
+                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'namespace' })}>
+                      <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                        <Icon name="folder" className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-mono font-bold text-xs text-white">Namespace Scopes:</div>
+                        <div className="text-[10px] text-slate-400 font-mono">Nodes span all namespaces; workloads are partitioned</div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        onClick={() => setSelectedNamespaceFilter('all')}
+                        className={`px-3 py-1 rounded-xl text-xs font-mono font-bold ${
+                          selectedNamespaceFilter === 'all' ? 'bg-blue-600 text-white shadow' : 'bg-slate-950 border border-slate-800 text-slate-400'
+                        }`}
+                      >
+                        All ({cluster.pods.length})
+                      </button>
+                      {namespacesList.map(ns => (
+                        <button
+                          key={ns}
+                          onClick={() => setSelectedNamespaceFilter(ns)}
+                          className={`px-3 py-1 rounded-xl text-xs font-mono font-bold border ${
+                            selectedNamespaceFilter === ns ? `${getNsColor(ns).bg} ${getNsColor(ns).text} ${getNsColor(ns).border}` : 'bg-slate-950 border-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {ns}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setActiveModal('namespace')}
+                        className="px-2.5 py-1 rounded-xl bg-slate-800 text-cyan-300 text-xs font-mono font-bold border border-slate-700 flex items-center gap-1"
+                      >
+                        <Icon name="plus" className="w-3 h-3" />
+                        <span>Namespace</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Summary Bar */}
+                  <div className="flex flex-wrap items-center justify-between text-xs font-mono text-slate-300">
+                    <div className="flex items-center gap-3">
+                      <span>Nodes: <strong className="text-cyan-400">{cluster.nodes.length}</strong></span>
+                      <span>•</span>
+                      <span>Pods: <strong className="text-emerald-400">{cluster.pods.filter(p => p.status === 'Running').length}/{cluster.pods.length}</strong></span>
+                      <span>•</span>
+                      <span>Services: <strong className="text-amber-400">{visibleServices.length}</strong></span>
+                    </div>
+                    {cluster.hpa && (
+                      <span className="px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 flex items-center gap-1 text-[11px]">
+                        <Icon name="trendingUp" className="w-3.5 h-3.5 text-emerald-400" />
+                        HPA Active ({cluster.hpa.minReplicas}-{cluster.hpa.maxReplicas} pods)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 1. Control Plane */}
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                      <h3 className="text-xs font-bold text-slate-200 font-mono uppercase tracking-wider">Control Plane (Master Node)</h3>
+                      <span className="text-[10px] px-2 py-0.2 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/30 font-mono">
+                        ns: kube-system
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
+                      <Icon name="shieldCheck" className="w-3.5 h-3.5" />
+                      <span>Quorum Active</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {['api-server', 'etcd', 'scheduler', 'controller-manager'].map(id => (
+                      <Tooltip key={id} conceptId={id}>
+                        <div
+                          onClick={() => setSelectedElement({ type: 'concept', id })}
+                          className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900 transition-all cursor-pointer group"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="p-1 rounded-lg bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
+                              <Icon name={K8S_CONCEPTS[id].iconName} className="w-4 h-4" />
+                            </div>
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                          </div>
+                          <div className="font-mono font-bold text-xs text-white group-hover:text-cyan-300">{K8S_CONCEPTS[id].name}</div>
+                          <div className="text-[10px] text-slate-500 truncate">{K8S_CONCEPTS[id].shortDescription}</div>
+                        </div>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Ingress Controller */}
+                {cluster.ingress && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2 font-mono text-xs font-bold text-slate-300">
+                      <Icon name="globe" className="w-4 h-4 text-emerald-400" />
+                      <span>Layer 7 Ingress Controller</span>
+                    </div>
+                    <Tooltip conceptId="ingress">
+                      <div
+                        onClick={() => setSelectedElement({ type: 'ingress', id: cluster.ingress.id })}
+                        className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 cursor-pointer shadow-lg max-w-md"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="p-1 rounded-lg bg-emerald-500/10 text-emerald-400">
+                              <Icon name="globe" className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="font-mono font-bold text-xs text-white">{cluster.ingress.name}</div>
+                              <div className="text-[9px] font-mono text-slate-400">Controller: {cluster.ingress.controller.toUpperCase()}</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                            ns: {cluster.ingress.namespace}
+                          </span>
+                        </div>
+                        <div className="bg-slate-950 rounded-lg p-2 font-mono text-[11px] text-slate-300 border border-slate-800 space-y-1">
+                          {cluster.ingress.rules.map((r, i) => (
+                            <div key={i} className="flex items-center justify-between">
+                              <span className="text-cyan-300">{r.host}{r.path}</span>
+                              <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+                                <Icon name="arrowRight" className="w-2.5 h-2.5 text-slate-500" />
+                                {r.serviceName}:{r.servicePort}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Tooltip>
+                  </div>
+                )}
+
+                {/* 3. Services */}
+                {visibleServices.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2 font-mono text-xs font-bold text-slate-300">
+                      <div className="flex items-center gap-2">
+                        <Icon name="share2" className="w-4 h-4 text-amber-400" />
+                        <span>Services & Load Balancers ({visibleServices.length})</span>
+                      </div>
+                      <span className="text-[10px] text-slate-500">kube-proxy internal routing</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {visibleServices.map(svc => {
+                        const nsColor = getNsColor(svc.namespace);
+                        return (
+                          <Tooltip key={svc.id} conceptId="service">
+                            <div
+                              onClick={() => setSelectedElement({ type: 'service', id: svc.id })}
+                              className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-500/60 cursor-pointer shadow-lg group"
+                            >
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="p-1 rounded-lg bg-amber-500/10 text-amber-400">
+                                    <Icon name="share2" className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <div className="font-mono font-bold text-xs text-white group-hover:text-amber-300">{svc.name}</div>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                      <span className="text-[9px] px-1.5 py-0.2 rounded border bg-amber-500/10 text-amber-400 border-amber-500/30 uppercase">{svc.type}</span>
+                                      <span className={`text-[9px] px-1.5 py-0.2 rounded border font-mono font-bold ${nsColor.bg} ${nsColor.text} ${nsColor.border}`}>
+                                        ns: {svc.namespace}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setCluster(prev => ({ ...prev, services: prev.services.filter(s => s.id !== svc.id) })); }}
+                                  className="text-slate-500 hover:text-rose-400 p-1"
+                                >
+                                  <Icon name="trash2" className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <div className="bg-slate-950 rounded-lg p-2 font-mono text-[11px] border border-slate-800 space-y-1 text-slate-400">
+                                <div className="flex justify-between"><span>ClusterIP:</span><span className="text-slate-200">{svc.clusterIP}</span></div>
+                                <div className="flex justify-between"><span>Port:</span><span className="text-amber-400">:{svc.port} → :{svc.targetPort}</span></div>
+                              </div>
+                              <div className="mt-2 flex items-center justify-between text-[10px] font-mono">
+                                <span className="text-slate-500">Selector: <strong className="text-cyan-300">{Object.entries(svc.selector).map(([k, v]) => `${k}=${v}`).join(',')}</strong></span>
+                                <span className="text-emerald-400 font-bold flex items-center gap-1">
+                                  <Icon name="checkCircle" className="w-3 h-3" />
+                                  {svc.matchedPodIds.length} Pods
+                                </span>
+                              </div>
+                            </div>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. Worker Nodes & Hosted Pods */}
+                <div>
+                  <div className="flex items-center justify-between mb-3 font-mono text-xs font-bold text-slate-300">
+                    <div className="flex items-center gap-2">
+                      <Icon name="server" className="w-4 h-4 text-blue-400" />
+                      <span>Cluster Worker Nodes ({cluster.nodes.length}) — Hosting Multi-Namespace Pods</span>
+                    </div>
+                    <button
+                      onClick={addNode}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/20 text-blue-300 text-xs font-bold border border-blue-500/30 hover:bg-blue-600/40"
+                    >
+                      <Icon name="plus" className="w-3.5 h-3.5" />
+                      <span>Add Worker Node</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {cluster.nodes.map(node => {
+                      const allNodePods = cluster.pods.filter(p => p.nodeId === node.id);
+                      const filteredNodePods = selectedNamespaceFilter === 'all' 
+                        ? allNodePods 
+                        : allNodePods.filter(p => p.namespace === selectedNamespaceFilter);
+                      const cpuPct = Math.min(100, Math.round((node.cpuAllocated / node.cpuTotal) * 100));
+                      const memPct = Math.min(100, Math.round((node.memAllocated / node.memTotal) * 100));
+
+                      return (
+                        <div key={node.id} className="rounded-2xl border bg-slate-900 border-slate-700 shadow-xl overflow-hidden flex flex-col">
+                          {/* Node Header */}
+                          <div className="p-4 bg-slate-950 border-b border-slate-800">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setSelectedElement({ type: 'node', id: node.id })}>
+                                <div className="p-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
+                                  <Icon name="server" className="w-5 h-5" />
+                                </div>
+                                <div>
+                                  <Tooltip conceptId="node">
+                                    <h4 className="font-mono font-bold text-sm text-slate-100 hover:text-cyan-300">{node.name}</h4>
+                                  </Tooltip>
+                                  <div className="text-[11px] font-mono text-slate-400">IP: {node.ip} • Zone: {node.zone}</div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => drainNode(node.id)}
+                                  className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-rose-400 border border-slate-700"
+                                  title="Drain Node (Evacuate pods)"
+                                >
+                                  <Icon name="powerOff" className="w-3.5 h-3.5" />
+                                </button>
+                                {cluster.nodes.length > 1 && (
+                                  <button
+                                    onClick={() => setCluster(prev => ({ ...prev, nodes: prev.nodes.filter(n => n.id !== node.id) }))}
+                                    className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-rose-400 border border-slate-700"
+                                  >
+                                    <Icon name="trash2" className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Resource Meters */}
+                            <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-800/60 font-mono text-[10px]">
+                              <div>
+                                <div className="flex justify-between text-slate-400 mb-1">
+                                  <span>CPU ({node.cpuAllocated}/{node.cpuTotal} Cores)</span>
+                                  <span className="text-slate-300 font-bold">{cpuPct}%</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                  <div className={`h-full ${cpuPct > 80 ? 'bg-rose-500' : 'bg-cyan-500'}`} style={{ width: `${cpuPct}%` }}></div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="flex justify-between text-slate-400 mb-1">
+                                  <span>RAM ({node.memAllocated}/{node.memTotal} MB)</span>
+                                  <span className="text-slate-300 font-bold">{memPct}%</span>
+                                </div>
+                                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                  <div className={`h-full ${memPct > 80 ? 'bg-rose-500' : 'bg-purple-500'}`} style={{ width: `${memPct}%` }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Pods Grid */}
+                          <div className="p-4 flex-1 space-y-2.5">
+                            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 uppercase font-bold">
+                              <span>Pods ({filteredNodePods.length})</span>
+                              {selectedNamespaceFilter !== 'all' && (
+                                <span className="text-[10px] text-cyan-300 font-normal lowercase">
+                                  ns: {selectedNamespaceFilter}
+                                </span>
+                              )}
+                            </div>
+                            {filteredNodePods.length === 0 ? (
+                              <div className="p-6 border-2 border-dashed border-slate-800 rounded-xl text-center text-xs font-mono text-slate-600">
+                                No pods scheduled on this node in active namespace
+                              </div>
+                            ) : (
+                              filteredNodePods.map(pod => {
+                                const nsColor = getNsColor(pod.namespace);
+                                return (
+                                  <Tooltip key={pod.id} conceptId="pod">
+                                    <div
+                                      onClick={() => setSelectedElement({ type: 'pod', id: pod.id })}
+                                      className={`p-3 rounded-xl bg-slate-950 border transition-all cursor-pointer ${
+                                        pod.status === 'CrashLoopBackOff' ? 'border-rose-500 animate-pulse' :
+                                        pod.status === 'ContainerCreating' ? 'border-amber-500' : 'border-slate-800 hover:border-cyan-500/50'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <div className="p-1 rounded bg-emerald-500/10 text-emerald-400">
+                                            <Icon name="box" className="w-3.5 h-3.5" />
+                                          </div>
+                                          <span className="font-mono text-xs font-bold text-slate-100 truncate">{pod.name}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                          <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border ${nsColor.bg} ${nsColor.text} ${nsColor.border}`}>
+                                            ns: {pod.namespace}
+                                          </span>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); killPod(pod.id); }}
+                                            className="p-1 text-slate-500 hover:text-rose-400"
+                                            title="Kill pod (Chaos Monkey)"
+                                          >
+                                            <Icon name="skull" className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <div className="bg-slate-900 rounded p-1.5 font-mono text-[10px] text-slate-400 flex justify-between">
+                                        <span>Image: <strong className="text-cyan-300">{pod.containers[0]?.image}</strong></span>
+                                        <span>IP: {pod.ip}</span>
+                                      </div>
+                                    </div>
+                                  </Tooltip>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 5. Configuration & Storage */}
+                {(visibleConfigMaps.length > 0 || visibleSecrets.length > 0 || visiblePvcs.length > 0) && (
+                  <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-lg">
+                    <h3 className="text-xs font-bold text-slate-200 font-mono uppercase tracking-wider mb-3 border-b border-slate-800 pb-2">
+                      Configuration & Persistent Storage (Scoped to Namespace)
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {/* ConfigMaps */}
+                      <div className="space-y-2">
+                        <div className="text-xs font-mono font-bold text-cyan-400 flex items-center gap-1.5">
+                          <Icon name="sliders" className="w-3.5 h-3.5" />
+                          <span>ConfigMaps ({visibleConfigMaps.length})</span>
+                        </div>
+                        {visibleConfigMaps.map(cm => {
+                          const nsColor = getNsColor(cm.namespace);
+                          return (
+                            <div key={cm.id} className="p-3 rounded-xl bg-slate-950 border border-cyan-500/30">
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="font-mono text-xs font-bold text-slate-200">{cm.name}</span>
+                                <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${nsColor.bg} ${nsColor.text} ${nsColor.border}`}>ns: {cm.namespace}</span>
+                              </div>
+                              <div className="text-[10px] font-mono text-slate-400 bg-slate-900 p-1.5 rounded truncate">
+                                {Object.entries(cm.data).map(([k, v]) => `${k}: ${v}`).join(' | ')}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Secrets */}
+                      <div className="space-y-2">
+                        <div className="text-xs font-mono font-bold text-rose-400 flex items-center gap-1.5">
+                          <Icon name="lock" className="w-3.5 h-3.5" />
+                          <span>Secrets ({visibleSecrets.length})</span>
+                        </div>
+                        {visibleSecrets.map(sec => {
+                          const nsColor = getNsColor(sec.namespace);
+                          const isShown = Boolean(showSecretMap[sec.id]);
+                          return (
+                            <div key={sec.id} className="p-3 rounded-xl bg-slate-950 border border-rose-500/30">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-mono text-xs font-bold text-slate-200">{sec.name}</span>
+                                <div className="flex items-center gap-1">
+                                  <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${nsColor.bg} ${nsColor.text} ${nsColor.border}`}>ns: {sec.namespace}</span>
+                                  <button
+                                    onClick={() => setShowSecretMap(prev => ({ ...prev, [sec.id]: !prev[sec.id] }))}
+                                    className="p-1 text-slate-400 hover:text-white"
+                                  >
+                                    <Icon name={isShown ? 'eyeOff' : 'eye'} className="w-3 h-3 text-rose-400" />
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="text-[10px] font-mono text-slate-400 bg-slate-900 p-1.5 rounded truncate">
+                                {Object.entries(sec.data).map(([k, v]) => `${k}: ${isShown ? v : '••••••••'}`).join(' | ')}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* PVCs */}
+                      <div className="space-y-2">
+                        <div className="text-xs font-mono font-bold text-purple-400 flex items-center gap-1.5">
+                          <Icon name="hardDrive" className="w-3.5 h-3.5" />
+                          <span>PVC Storage ({visiblePvcs.length})</span>
+                        </div>
+                        {visiblePvcs.map(pvc => (
+                          <div key={pvc.id} className="p-3 rounded-xl bg-slate-950 border border-purple-500/30">
+                            <div className="flex justify-between font-mono text-xs font-bold text-slate-200 mb-1">
+                              <span>{pvc.name}</span>
+                              <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">{pvc.status}</span>
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-400 bg-slate-900 p-1.5 rounded flex justify-between">
+                              <span>Cap: <strong className="text-purple-300">{pvc.capacity}</strong></span>
+                              <span>Class: {pvc.storageClass}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* 🌟 2. DEDICATED SCREEN: TRAFFIC & NETWORK ROUTE MAP 🌟 */}
             {/* ============================================================== */}
             {viewMode === 'traffic' && (
               <div className="space-y-6 pb-20 animate-fadeIn">
@@ -623,7 +1310,7 @@ spec:
                         <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">End-to-End Pipeline</span>
                       </div>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Interactive packet debugger: Trace how HTTP traffic traverses Internet → Ingress L7 → Service L4 Virtual IP → Target Container.
+                        Trace how HTTP traffic traverses Internet → Ingress L7 → Service L4 Virtual IP → Target Container.
                       </p>
                     </div>
                   </div>
@@ -703,7 +1390,7 @@ spec:
                       {/* Traffic Actions */}
                       <div className="pt-3 border-t border-slate-800 space-y-2">
                         <button
-                          onClick={() => { setIsStreaming(false); dispatchPacket(false); }}
+                          onClick={() => { setIsStreaming(false); dispatchPacket(); }}
                           className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
                         >
                           <Icon name="send" className="w-4 h-4" />
@@ -723,7 +1410,7 @@ spec:
                         </button>
                       </div>
 
-                      {/* Chaos Monkey in Traffic Screen */}
+                      {/* Chaos Action in Traffic */}
                       <div className="pt-3 border-t border-slate-800">
                         <button
                           onClick={() => {
@@ -731,7 +1418,6 @@ spec:
                             if (running.length > 0) killPod(running[0].id);
                           }}
                           className="w-full py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-600/50 text-rose-300 text-xs font-bold flex items-center justify-center gap-2 transition-all"
-                          title="Kill pod to watch traffic automatically failover to remaining pods"
                         >
                           <Icon name="skull" className="w-3.5 h-3.5 text-rose-400" />
                           <span>Kill Active Pod (Test Failover)</span>
@@ -747,7 +1433,7 @@ spec:
                       </h4>
 
                       <div className="space-y-2">
-                        {cluster.pods.filter(p => p.status === 'Running' && p.namespace === 'production').map(pod => {
+                        {cluster.pods.filter(p => p.status === 'Running' && (selectedNamespaceFilter === 'all' || p.namespace === selectedNamespaceFilter)).map(pod => {
                           const hits = podHitStats[pod.id] || 0;
                           const pct = totalTrafficCount > 0 ? Math.round((hits / totalTrafficCount) * 100) : 0;
                           const isTarget = selectedPodForTraffic?.id === pod.id && activeHop === 4;
@@ -912,92 +1598,6 @@ spec:
             )}
 
             {/* ============================================================== */}
-            {/* 2. VISUAL CANVAS VIEW */}
-            {/* ============================================================== */}
-            {viewMode === 'canvas' && (
-              <div className="space-y-6 pb-28 animate-fadeIn">
-                {/* Namespace Selector Banner */}
-                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'namespace' })}>
-                      <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30">
-                        <Icon name="folder" className="w-4 h-4" />
-                      </div>
-                      <div className="font-mono font-bold text-xs text-white">Namespace Scopes:</div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      <button
-                        onClick={() => setSelectedNamespaceFilter('all')}
-                        className={`px-3 py-1 rounded-xl text-xs font-mono font-bold ${
-                          selectedNamespaceFilter === 'all' ? 'bg-blue-600 text-white shadow' : 'bg-slate-950 border border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        All ({cluster.pods.length})
-                      </button>
-                      {namespacesList.map(ns => (
-                        <button
-                          key={ns}
-                          onClick={() => setSelectedNamespaceFilter(ns)}
-                          className={`px-3 py-1 rounded-xl text-xs font-mono font-bold border ${
-                            selectedNamespaceFilter === ns ? `${getNsColor(ns).bg} ${getNsColor(ns).text} ${getNsColor(ns).border}` : 'bg-slate-950 border-slate-800 text-slate-400'
-                          }`}
-                        >
-                          {ns}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Control Plane */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 shadow-lg">
-                  <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
-                      <h3 className="text-xs font-bold text-slate-200 font-mono uppercase tracking-wider">Control Plane</h3>
-                    </div>
-                    <span className="text-xs font-mono text-emerald-400">Healthy</span>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {['api-server', 'etcd', 'scheduler', 'controller-manager'].map(id => (
-                      <div
-                        key={id}
-                        onClick={() => setSelectedElement({ type: 'concept', id })}
-                        className="p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 cursor-pointer"
-                      >
-                        <div className="font-mono font-bold text-xs text-white">{K8S_CONCEPTS[id].name}</div>
-                        <div className="text-[10px] text-slate-500 truncate">{K8S_CONCEPTS[id].shortDescription}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Nodes & Pods */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {cluster.nodes.map(node => (
-                    <div key={node.id} className="rounded-2xl border bg-slate-900 border-slate-700 p-4 space-y-3">
-                      <div className="flex justify-between items-center border-b border-slate-800 pb-2 font-mono text-xs font-bold">
-                        <span className="text-white">{node.name}</span>
-                        <span className="text-emerald-400">{node.status}</span>
-                      </div>
-                      <div className="space-y-2">
-                        {cluster.pods.filter(p => p.nodeId === node.id && (selectedNamespaceFilter === 'all' || p.namespace === selectedNamespaceFilter)).map(pod => (
-                          <div key={pod.id} className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
-                            <span className="font-mono text-xs text-slate-200 truncate">{pod.name}</span>
-                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${getNsColor(pod.namespace).bg} ${getNsColor(pod.namespace).text} ${getNsColor(pod.namespace).border}`}>
-                              ns: {pod.namespace}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================== */}
             {/* 3. LIVE YAML VIEW */}
             {/* ============================================================== */}
             {viewMode === 'yaml' && (
@@ -1028,8 +1628,9 @@ spec:
                 <div className="border-b border-slate-800 pb-3">
                   <h2 className="text-xl font-bold font-mono text-white flex items-center gap-2">
                     <Icon name="terminal" className="w-6 h-6 text-emerald-400" />
-                    Kubectl CLI Terminal
+                    Kubectl CLI Terminal Simulator
                   </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">Try: <code className="text-cyan-300">kubectl get pods</code>, <code className="text-cyan-300">kubectl get nodes</code>, <code className="text-cyan-300">kubectl get svc</code></p>
                 </div>
                 <TerminalSimulator runKubectl={runKubectl} />
               </div>
@@ -1064,6 +1665,38 @@ spec:
             )}
           </main>
 
+          {/* FLOATING BUILDER TOOLBAR (ONLY ON CANVAS VIEW) */}
+          {viewMode === 'canvas' && (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center">
+              <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl p-2 flex items-center gap-1.5 ring-1 ring-white/10">
+                <span className="px-3 py-1 text-xs font-mono font-bold text-slate-300 flex items-center gap-1.5 border-r border-slate-800">
+                  <Icon name="wrench" className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Builder:</span>
+                </span>
+
+                <button onClick={addNode} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600/30 text-xs font-semibold text-slate-200 hover:text-cyan-300 border border-slate-700">
+                  <Icon name="server" className="w-3.5 h-3.5 text-blue-400" />
+                  <span>+ Node</span>
+                </button>
+
+                <button onClick={() => setActiveModal('deployment')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-600/30 text-xs font-semibold text-slate-200 hover:text-cyan-300 border border-slate-700">
+                  <Icon name="layers" className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>+ Deployment</span>
+                </button>
+
+                <button onClick={() => setActiveModal('service')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 text-xs font-semibold text-slate-200 hover:text-amber-300 border border-slate-700">
+                  <Icon name="share2" className="w-3.5 h-3.5 text-amber-400" />
+                  <span>+ Service</span>
+                </button>
+
+                <button onClick={() => setActiveModal('namespace')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-purple-600/30 text-xs font-semibold text-slate-200 hover:text-purple-300 border border-slate-700">
+                  <Icon name="folder" className="w-3.5 h-3.5 text-purple-400" />
+                  <span>+ Namespace</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* LOGS DRAWER */}
           <LogsDrawer logs={logs} />
 
@@ -1081,17 +1714,94 @@ spec:
                     {K8S_CONCEPTS[selectedElement.id]?.analogy}
                   </div>
                 )}
+                {K8S_CONCEPTS[selectedElement.id]?.whyItMatters && (
+                  <div className="space-y-1.5 font-sans">
+                    {K8S_CONCEPTS[selectedElement.id]?.whyItMatters.map((point, idx) => (
+                      <div key={idx} className="p-2 rounded bg-slate-800/60 text-slate-300 flex items-start gap-1.5">
+                        <span className="text-cyan-400 font-bold">•</span>
+                        <span>{point}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <pre className="p-3 rounded bg-slate-950 text-cyan-300 overflow-x-auto border border-slate-800">
                   <code>{K8S_CONCEPTS[selectedElement.id]?.yamlSnippet}</code>
                 </pre>
               </div>
             </div>
           )}
+
+          {/* MODALS */}
+          {activeModal === 'namespace' && (
+            <ModalWrapper title="Create Namespace" onClose={() => setActiveModal(null)}>
+              <form onSubmit={handleCreateNamespace} className="space-y-3 text-xs font-mono">
+                <div>
+                  <label className="block text-slate-400 mb-1">Namespace Name</label>
+                  <input type="text" value={newNsName} onChange={e => setNewNsName(e.target.value)} placeholder="e.g. analytics, staging" className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required autoFocus />
+                </div>
+                <button type="submit" className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold mt-2">Create Namespace</button>
+              </form>
+            </ModalWrapper>
+          )}
+
+          {activeModal === 'deployment' && (
+            <ModalWrapper title="Create Deployment" onClose={() => setActiveModal(null)}>
+              <form onSubmit={handleCreateDeployment} className="space-y-3 text-xs font-mono">
+                <div><label className="block text-slate-400 mb-1">Name</label><input type="text" value={depForm.name} onChange={e => setDepForm({...depForm, name: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Namespace</label>
+                  <select value={depForm.ns} onChange={e => setDepForm({...depForm, ns: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white">
+                    {namespacesList.map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div><label className="block text-slate-400 mb-1">Image</label><input type="text" value={depForm.image} onChange={e => setDepForm({...depForm, image: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><label className="block text-slate-400 mb-1">Port</label><input type="number" value={depForm.port} onChange={e => setDepForm({...depForm, port: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                  <div><label className="block text-slate-400 mb-1">Replicas</label><input type="number" min="1" max="8" value={depForm.replicas} onChange={e => setDepForm({...depForm, replicas: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                </div>
+                <button type="submit" className="w-full py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold mt-2">Deploy Workload</button>
+              </form>
+            </ModalWrapper>
+          )}
+
+          {activeModal === 'service' && (
+            <ModalWrapper title="Create Service" onClose={() => setActiveModal(null)}>
+              <form onSubmit={handleCreateService} className="space-y-3 text-xs font-mono">
+                <div><label className="block text-slate-400 mb-1">Name</label><input type="text" value={svcForm.name} onChange={e => setSvcForm({...svcForm, name: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Namespace</label>
+                  <select value={svcForm.ns} onChange={e => setSvcForm({...svcForm, ns: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white">
+                    {namespacesList.map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div><label className="block text-slate-400 mb-1">Port</label><input type="number" value={svcForm.port} onChange={e => setSvcForm({...svcForm, port: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                  <div><label className="block text-slate-400 mb-1">Target Port</label><input type="number" value={svcForm.targetPort} onChange={e => setSvcForm({...svcForm, targetPort: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
+                </div>
+                <button type="submit" className="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold mt-2">Create Service</button>
+              </form>
+            </ModalWrapper>
+          )}
         </div>
       );
     }
 
-    // --- LOGS DRAWER COMPONENT ---
+    // --- MODAL WRAPPER ---
+    function ModalWrapper({ title, onClose, children }) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-fadeIn">
+            <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+              <h3 className="font-mono font-bold text-white text-sm">{title}</h3>
+              <button onClick={onClose} className="text-slate-400 hover:text-white text-xs">✕</button>
+            </div>
+            {children}
+          </div>
+        </div>
+      );
+    }
+
+    // --- LOGS DRAWER ---
     function LogsDrawer({ logs }) {
       const [open, setOpen] = useState(false);
       return (
