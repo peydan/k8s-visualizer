@@ -1,8 +1,8 @@
 # ☸️ KubeVerse: Interactive Kubernetes Visual Learning Lab
 
-An interactive, single-page web application designed for mastering Kubernetes (k8s) concepts visually and hands-on.
+An interactive, zero-dependency, single-file web application designed for mastering Kubernetes (k8s) concepts visually and hands-on.
 
-![Kubernetes Learning](https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.svg)
+🌐 **Live Website**: [https://peydan.github.io/k8s-visualizer/](https://peydan.github.io/k8s-visualizer/)
 
 ---
 
@@ -10,60 +10,40 @@ An interactive, single-page web application designed for mastering Kubernetes (k
 
 - 🏗️ **Interactive Visual Cluster Canvas**:
   - **Control Plane**: Master node components (`kube-apiserver`, `etcd`, `kube-scheduler`, `kube-controller-manager`) with live health indicators.
-  - **Worker Nodes**: Real-time CPU and Memory allocation meters, status badges (Ready, Cordoned), kubelet and kube-proxy indicators.
-  - **Workloads & Pods**: Interactive Pod cards inside nodes with status transitions (`Running`, `ContainerCreating`, `CrashLoopBackOff`, `Terminating`), IP addresses, container specifications, and mount badges.
-  - **Networking & Routing**: Ingress Controller (host & path rules), Services (ClusterIP, NodePort, LoadBalancer, Headless) with dynamic selector matching.
+  - **Worker Nodes**: Real-time CPU and Memory allocation meters, status badges (Ready, Cordoned), kubelet, and kube-proxy indicators.
+  - **Workloads & Pods**: Standalone Pods vs. Deployment-managed pods with self-healing lifecycle transitions.
+  - **Networking & Routing**: Multi-Ingress Controller support (NGINX, Traefik, Envoy, Kong, ALB), Services (ClusterIP, LoadBalancer, Headless).
+  - **Virtual Isolation**: Namespace filtering across all workloads.
   - **Configuration & Storage**: ConfigMaps, Secrets (with show/hide toggle), and PersistentVolumeClaims (PVCs).
   - **Auto-Scaling**: Horizontal Pod Autoscaler (HPA) with live CPU load tracking.
 
-- 🛠️ **Architecture Setup Builder**:
-  - Floating builder toolbox to add Worker Nodes, Deployments, Services, Ingress routes, ConfigMaps, Secrets, and PVCs.
-  - 5 one-click production-grade architecture presets:
-    1. *Hello Pod & Node Basics*
-    2. *Web App with Service & Ingress*
-    3. *High Availability & Auto-Scaling (HPA)*
-    4. *Stateful Database with PVC & Secret*
-    5. *Multi-Tier Microservices Mesh*
+- 🗺️ **Dedicated Traffic Route Map & Packet Tracer**:
+  - 4-Hop animated pipeline tracing: `Client Browser` ➔ `Ingress Controller (L7)` ➔ `Service / kube-proxy (L4 VIP & DNAT)` ➔ `Target Pod Container`.
+  - 1-Click Behavior Scenarios: Round-Robin balancing, `/api` Path Routing, 404 Route Miss, Chaos Failover mid-stream, 503 Zero Endpoints.
+  - Pacing speed controls (`Slow 1.8s`, `Medium 1.2s`, `Fast 0.6s`) and manual step-by-step tracing.
+  - Live HTTP response and kube-proxy iptables DNAT JSON inspector.
 
-- 💡 **Vibrant Educational Tooltips & Inspector**:
-  - Every single element has a glowing tooltip detailing:
-    - **Simple Analogy** (e.g. airport control tower, cargo ships, reception desk)
-    - **Purpose & Why It Matters**
-    - **Key Technical Attributes**
-    - **Common `kubectl` commands**
-  - Interactive deep-dive modal with live instance inspection, container stdout stream, command cheat sheets, and YAML snippets.
+- 💡 **High-Contrast Solid White Tooltips & Inspector**:
+  - Solid pure white cards with dark high-contrast typography and glowing cyan accents.
+  - Category Badges, Real-World Analogies, Architecture Rules, and `$ kubectl` commands for every element.
 
-- ⚡ **Live Simulations & Playground**:
-  - **Send Traffic**: Watch animated HTTP packet particles route through Ingress → Service → load-balanced across healthy Pods.
-  - **Chaos Monkey / Kill Pod**: Simulate pod failures and watch the ReplicaSet & Controller Manager automatically self-heal and schedule replacement pods.
-  - **Spike CPU Load**: Adjust simulated CPU load to watch the HPA auto-scale deployment replicas.
-  - **Drain & Cordon Nodes**: Evacuate pods off a node to watch them safely migrate to remaining healthy worker nodes.
+- ⚡ **Live Simulations & Chaos Testing**:
+  - **Chaos Monkey**: Terminate pods to observe Controller Manager self-healing vs. standalone pod eviction.
+  - **CPU Load Generator**: Trigger automatic HPA horizontal replica scaling.
+  - **Node Drain**: Safely evacuate running pods onto remaining healthy worker nodes.
 
-- 🎯 **Guided Interactive Missions**:
-  - Step-by-step challenges with automated state verification and confetti celebrations upon completion.
-
-- 📜 **Live YAML Manifest Generator**:
-  - Dynamically produces valid, ready-to-deploy Kubernetes YAML manifests for the entire active setup with 1-click copy and download.
-
-- 💻 **Kubectl Terminal Simulator**:
-  - Interactive in-browser terminal executing real commands (`kubectl get all`, `kubectl get pods -o wide`, `kubectl get nodes`, `kubectl scale deployment ...`, `kubectl describe ...`, `kubectl cluster-info`).
+- 📜 **Live YAML Manifest Generator & Kubectl CLI**:
+  - Generates ready-to-deploy `networking.k8s.io/v1` Ingress, `apps/v1` Deployment, `v1` Service, and `v1` Pod manifests.
+  - Interactive terminal executing `kubectl get pods`, `kubectl get nodes`, `kubectl get svc`, `kubectl get ingress`, `kubectl run`.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Running the Project
 
-### Prerequisites
-- Node.js 18+
-- npm 9+
+This project is completely **standalone** and requires **no build tools, Node.js, or web server**.
 
-### Run Locally
-```bash
-# 1. Install dependencies
-npm install
+### Option 1: Open Directly
+Double-click [`index.html`](index.html) or drag it into any modern web browser.
 
-# 2. Start Vite development server
-npm run dev
-
-# 3. Build production bundle
-npm run build
-```
+### Option 2: Live Website
+Visit [https://peydan.github.io/k8s-visualizer/](https://peydan.github.io/k8s-visualizer/).
