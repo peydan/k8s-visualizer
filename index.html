@@ -246,14 +246,16 @@
         analogy: 'A shipping container hold carrying closely tied containers sharing localhost networking and volumes.',
         whyItMatters: [
           'Every Pod gets its own unique Cluster IP address inside its namespace.',
+          'Standalone Pods are NOT self-healing! If killed, they stay dead unless managed by a Deployment/ReplicaSet controller.',
           'Containers inside the same Pod share localhost and can share volumes.'
         ],
         keyAttributes: [{ label: 'Lifecycle', description: 'Pending -> ContainerCreating -> Running -> Succeeded/Failed' }],
         kubectlCommands: [
+          { command: 'kubectl run my-pod --image=nginx:alpine', explanation: 'Deploys a standalone single pod' },
           { command: 'kubectl get pods -o wide', explanation: 'Lists pods with node placement and IP' },
           { command: 'kubectl logs <pod-name> -n <namespace>', explanation: 'Streams stdout logs from container' }
         ],
-        yamlSnippet: `apiVersion: v1\nkind: Pod\nmetadata:\n  name: web`,
+        yamlSnippet: `apiVersion: v1\nkind: Pod\nmetadata:\n  name: standalone-pod\n  namespace: default\nspec:\n  containers:\n  - name: app\n    image: nginx:alpine\n    ports:\n    - containerPort: 80`,
         iconName: 'box',
         color: '#10b981'
       },
@@ -401,7 +403,7 @@
         shortDescription: 'Simulates a container crash or pod termination to demonstrate declarative self-healing.',
         analogy: 'A fire drill: tests the system\'s automatic emergency response and replica replacement.',
         whyItMatters: [
-          'Proves that the Kubernetes Controller Manager detects the missing replica and immediately launches a replacement.'
+          'Proves that the Kubernetes Controller Manager detects the missing replica and immediately launches a replacement (for Deployment pods).'
         ],
         keyAttributes: [{ label: 'Reconciliation', description: 'Controller Manager launches replacement' }],
         kubectlCommands: [{ command: 'kubectl delete pod <pod-name>', explanation: 'Deletes a pod to test automatic recreation' }],
@@ -444,10 +446,10 @@
             { id: 'dep-db', name: 'postgres-db', namespace: 'database', replicas: 1, selector: { app: 'postgres' }, container: { name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }, strategy: 'Recreate', configMaps: [], secrets: ['sec-db-auth'] }
           ],
           pods: [
-            { id: 'pod-web-1', name: 'web-frontend-9f7b6-x1', deploymentId: 'dep-webapp', nodeId: 'node-worker-1', namespace: 'production', status: 'Running', ip: '10.244.1.11', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 24, memoryUsage: 140, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
-            { id: 'pod-web-2', name: 'web-frontend-9f7b6-x2', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.14', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 28, memoryUsage: 148, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
-            { id: 'pod-web-3', name: 'web-frontend-9f7b6-x3', deploymentId: 'dep-webapp', nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.19', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 22, memoryUsage: 130, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
-            { id: 'pod-db-0', name: 'postgres-db-0', deploymentId: 'dep-db', nodeId: 'node-worker-1', namespace: 'database', status: 'Running', ip: '10.244.1.99', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-db-auth'], labels: { app: 'postgres' } }
+            { id: 'pod-web-1', name: 'web-frontend-9f7b6-x1', deploymentId: 'dep-webapp', isStandalone: false, nodeId: 'node-worker-1', namespace: 'production', status: 'Running', ip: '10.244.1.11', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 24, memoryUsage: 140, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-web-2', name: 'web-frontend-9f7b6-x2', deploymentId: 'dep-webapp', isStandalone: false, nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.14', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 28, memoryUsage: 148, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-web-3', name: 'web-frontend-9f7b6-x3', deploymentId: 'dep-webapp', isStandalone: false, nodeId: 'node-worker-2', namespace: 'production', status: 'Running', ip: '10.244.2.19', containers: [{ name: 'frontend', image: 'frontend-app:v2.1', port: 8080, cpuRequest: 0.25, memRequest: 256 }], restartCount: 0, cpuUsage: 22, memoryUsage: 130, configMapRefs: ['cm-app-settings'], labels: { app: 'webapp' } },
+            { id: 'pod-db-0', name: 'postgres-db-0', deploymentId: 'dep-db', isStandalone: false, nodeId: 'node-worker-1', namespace: 'database', status: 'Running', ip: '10.244.1.99', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 1024 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-db-auth'], labels: { app: 'postgres' } }
           ],
           services: [
             { id: 'svc-web', name: 'web-service', namespace: 'production', type: 'ClusterIP', clusterIP: '10.96.14.88', port: 80, targetPort: 8080, selector: { app: 'webapp' }, matchedPodIds: ['pod-web-1', 'pod-web-2', 'pod-web-3'] },
@@ -486,8 +488,8 @@
             { id: 'dep-api-hpa', name: 'payment-api', namespace: 'default', replicas: 2, selector: { app: 'payment-api' }, container: { name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }, strategy: 'RollingUpdate', configMaps: [], secrets: [], hpaEnabled: true }
           ],
           pods: [
-            { id: 'pod-hpa-1', name: 'payment-api-6b9f8-1a', deploymentId: 'dep-api-hpa', nodeId: 'node-worker-1', namespace: 'default', status: 'Running', ip: '10.244.1.20', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 45, memoryUsage: 310, labels: { app: 'payment-api' } },
-            { id: 'pod-hpa-2', name: 'payment-api-6b9f8-2b', deploymentId: 'dep-api-hpa', nodeId: 'node-worker-2', namespace: 'default', status: 'Running', ip: '10.244.2.35', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 50, memoryUsage: 320, labels: { app: 'payment-api' } }
+            { id: 'pod-hpa-1', name: 'payment-api-6b9f8-1a', deploymentId: 'dep-api-hpa', isStandalone: false, nodeId: 'node-worker-1', namespace: 'default', status: 'Running', ip: '10.244.1.20', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 45, memoryUsage: 310, labels: { app: 'payment-api' } },
+            { id: 'pod-hpa-2', name: 'payment-api-6b9f8-2b', deploymentId: 'dep-api-hpa', isStandalone: false, nodeId: 'node-worker-2', namespace: 'default', status: 'Running', ip: '10.244.2.35', containers: [{ name: 'api', image: 'payment-service:v3.0', port: 4000, cpuRequest: 0.5, memRequest: 512 }], restartCount: 0, cpuUsage: 50, memoryUsage: 320, labels: { app: 'payment-api' } }
           ],
           services: [
             { id: 'svc-payment', name: 'payment-service', namespace: 'default', type: 'LoadBalancer', clusterIP: '10.96.88.190', externalIP: '34.120.45.99', port: 80, targetPort: 4000, selector: { app: 'payment-api' }, matchedPodIds: ['pod-hpa-1', 'pod-hpa-2'] }
@@ -524,7 +526,7 @@
             { id: 'dep-postgres', name: 'postgres-db', namespace: 'database', replicas: 1, selector: { app: 'postgres' }, container: { name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 2048 }, strategy: 'Recreate', configMaps: [], secrets: ['sec-pg-auth'], pvc: 'pvc-postgres-data' }
           ],
           pods: [
-            { id: 'pod-postgres-0', name: 'postgres-db-0', deploymentId: 'dep-postgres', nodeId: 'node-worker-db', namespace: 'database', status: 'Running', ip: '10.244.5.1', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 2048 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-pg-auth'], pvcRefs: ['pvc-postgres-data'], labels: { app: 'postgres' } }
+            { id: 'pod-postgres-0', name: 'postgres-db-0', deploymentId: 'dep-postgres', isStandalone: false, nodeId: 'node-worker-db', namespace: 'database', status: 'Running', ip: '10.244.5.1', containers: [{ name: 'postgres', image: 'postgres:16-alpine', port: 5432, cpuRequest: 1.0, memRequest: 2048 }], restartCount: 0, cpuUsage: 18, memoryUsage: 890, secretRefs: ['sec-pg-auth'], pvcRefs: ['pvc-postgres-data'], labels: { app: 'postgres' } }
           ],
           services: [
             { id: 'svc-postgres-headless', name: 'postgres-headless', namespace: 'database', type: 'Headless', clusterIP: 'None', port: 5432, targetPort: 5432, selector: { app: 'postgres' }, matchedPodIds: ['pod-postgres-0'] }
@@ -634,6 +636,7 @@
       // Builder Modals
       const [activeModal, setActiveModal] = useState(null);
       const [depForm, setDepForm] = useState({ name: 'api-server', image: 'node:20-alpine', port: 3000, replicas: 2, ns: 'production' });
+      const [podForm, setPodForm] = useState({ name: 'standalone-worker', image: 'redis:7-alpine', port: 6379, ns: 'production', nodeId: '', labelKey: 'app', labelVal: 'redis', cpu: 0.2, mem: 128 });
       const [svcForm, setSvcForm] = useState({ name: 'api-svc', type: 'ClusterIP', port: 80, targetPort: 3000, key: 'app', val: 'api-server', ns: 'production' });
       const [ingForm, setIngForm] = useState({ name: 'custom-ingress', ns: 'production', controller: 'nginx', className: 'nginx', host: 'api.example.com', path: '/api', svcName: '', port: 80, tls: true });
       const [newNsName, setNewNsName] = useState('');
@@ -641,7 +644,7 @@
       // Cluster State
       const [cluster, setCluster] = useState(() => JSON.parse(JSON.stringify(PRESETS[0].state)));
       const [logs, setLogs] = useState([
-        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with multi-ingress controller capabilities.' }
+        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster ready. Deploy standalone pods or managed deployments.' }
       ]);
 
       // Traffic Screen State
@@ -744,7 +747,25 @@
       const killPod = (podId) => {
         const pod = cluster.pods.find(p => p.id === podId);
         if (!pod) return;
-        addLog('ChaosMonkey', 'error', `Killed Pod "${pod.name}" in namespace "${pod.namespace}". Triggering self-healing.`);
+
+        // Check if pod is standalone or managed by deployment
+        const isManaged = Boolean(pod.deploymentId);
+
+        if (!isManaged) {
+          addLog('ChaosMonkey', 'error', `Terminated Standalone Pod "${pod.name}". Standalone pods are NOT managed by a controller and will NOT be recreated!`);
+          setCluster(prev => ({
+            ...prev,
+            pods: prev.pods.map(p => p.id === podId ? { ...p, status: 'CrashLoopBackOff' } : p)
+          }));
+          setTimeout(() => {
+            setCluster(prev => ({ ...prev, pods: prev.pods.filter(p => p.id !== podId) }));
+            addLog('Kubelet', 'warning', `Standalone Pod "${pod.name}" removed completely from cluster.`);
+          }, 1500);
+          return;
+        }
+
+        // Managed by deployment -> Self healing
+        addLog('ChaosMonkey', 'error', `Killed Deployment Pod "${pod.name}". Controller Manager will self-heal.`);
         setCluster(prev => ({
           ...prev,
           pods: prev.pods.map(p => p.id === podId ? { ...p, status: 'CrashLoopBackOff' } : p)
@@ -761,6 +782,7 @@
               id: `pod-${dead.deploymentId}-${Math.random().toString(36).substring(2, 6)}`,
               name: `${dep?.name || 'pod'}-${Math.random().toString(36).substring(2, 7)}-heal`,
               deploymentId: dead.deploymentId,
+              isStandalone: false,
               nodeId: target ? target.id : 'unassigned',
               namespace: dead.namespace,
               status: 'ContainerCreating',
@@ -798,6 +820,7 @@
                 id: `pod-${dep.name}-${Math.random().toString(36).substring(2, 6)}`,
                 name: `${dep.name}-${Math.random().toString(36).substring(2, 7)}-${currentPods.length + i + 1}`,
                 deploymentId: dep.id,
+                isStandalone: false,
                 nodeId: targetNode.id,
                 namespace: dep.namespace,
                 status: 'Running',
@@ -895,7 +918,6 @@
           ? cluster.services.find(s => s.name === matchingRule.serviceName) 
           : cluster.services[0];
 
-        // Step delay proportional to chosen speed
         const hopDelay = Math.max(250, Math.floor(streamSpeed / 5));
 
         setActiveHop(1);
@@ -1099,6 +1121,7 @@
             id: `pod-${depForm.name.toLowerCase()}-${Math.random().toString(36).substring(2, 6)}`,
             name: `${depForm.name.toLowerCase()}-${Math.random().toString(36).substring(2, 7)}-${i + 1}`,
             deploymentId: depId,
+            isStandalone: false,
             nodeId: targetNode.id,
             namespace: depForm.ns,
             status: 'Running',
@@ -1118,6 +1141,51 @@
         }));
         setActiveModal(null);
         addLog('API-Server', 'success', `Created Deployment "${depForm.name}" in namespace "${depForm.ns}".`);
+      };
+
+      const handleCreateStandalonePod = (e) => {
+        e.preventDefault();
+        const podId = `pod-${Date.now().toString().slice(-4)}`;
+        const readyNodes = cluster.nodes.filter(n => n.status === 'Ready');
+        if (readyNodes.length === 0) return;
+
+        const assignedNode = podForm.nodeId 
+          ? cluster.nodes.find(n => n.id === podForm.nodeId) || readyNodes[0]
+          : readyNodes[Math.floor(Math.random() * readyNodes.length)];
+
+        const labels = podForm.labelKey ? { [podForm.labelKey]: podForm.labelVal } : { app: podForm.name };
+
+        const newPod = {
+          id: podId,
+          name: podForm.name.toLowerCase().replace(/\s+/g, '-'),
+          deploymentId: null, // Standalone!
+          isStandalone: true,
+          nodeId: assignedNode.id,
+          namespace: podForm.ns,
+          status: 'Running',
+          ip: `10.244.${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 200) + 10}`,
+          containers: [
+            {
+              name: podForm.name,
+              image: podForm.image,
+              port: Number(podForm.port || 80),
+              cpuRequest: Number(podForm.cpu || 0.2),
+              memRequest: Number(podForm.mem || 128)
+            }
+          ],
+          restartCount: 0,
+          cpuUsage: 12,
+          memoryUsage: 65,
+          labels
+        };
+
+        setCluster(prev => ({
+          ...prev,
+          pods: [...prev.pods, newPod]
+        }));
+
+        setActiveModal(null);
+        addLog('Scheduler', 'success', `Scheduled standalone Pod "${newPod.name}" onto ${assignedNode.name} in namespace "${podForm.ns}".`);
       };
 
       const handleCreateService = (e) => {
@@ -1174,6 +1242,9 @@
         cluster.deployments.forEach(dep => {
           chunks.push(`apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: ${dep.name}\n  namespace: ${dep.namespace}\nspec:\n  replicas: ${dep.replicas}\n  selector:\n    matchLabels:\n      ${Object.entries(dep.selector).map(([k, v]) => `${k}: ${v}`).join('\n      ')}\n  template:\n    metadata:\n      labels:\n        ${Object.entries(dep.selector).map(([k, v]) => `${k}: ${v}`).join('\n        ')}\n    spec:\n      containers:\n      - name: ${dep.container.name}\n        image: ${dep.container.image}\n        ports:\n        - containerPort: ${dep.container.port}`);
         });
+        cluster.pods.filter(p => p.isStandalone).forEach(sp => {
+          chunks.push(`apiVersion: v1\nkind: Pod\nmetadata:\n  name: ${sp.name}\n  namespace: ${sp.namespace}\n  labels:\n    ${Object.entries(sp.labels || {}).map(([k, v]) => `${k}: ${v}`).join('\n    ')}\nspec:\n  containers:\n  - name: ${sp.containers[0]?.name || 'app'}\n    image: ${sp.containers[0]?.image || 'nginx:alpine'}\n    ports:\n    - containerPort: ${sp.containers[0]?.port || 80}`);
+        });
         cluster.services.forEach(svc => {
           chunks.push(`apiVersion: v1\nkind: Service\nmetadata:\n  name: ${svc.name}\n  namespace: ${svc.namespace}\nspec:\n  type: ${svc.type}\n  selector:\n    ${Object.entries(svc.selector).map(([k, v]) => `${k}: ${v}`).join('\n    ')}\n  ports:\n  - port: ${svc.port}\n    targetPort: ${svc.targetPort}`);
         });
@@ -1186,9 +1257,13 @@
         if (parts[0] !== 'kubectl') return `Command not found: "${parts[0]}". Type "kubectl help".`;
         const sub = parts[1];
         const res = parts[2];
-        if (!sub || sub === 'help') return 'Available:\n  kubectl get (pods | nodes | svc | ingress | ns | all)\n  kubectl scale deployment <name> --replicas=<num>\n  kubectl delete pod <name>';
+        if (!sub || sub === 'help') return 'Available:\n  kubectl get (pods | nodes | svc | ingress | ns | all)\n  kubectl run <name> --image=<img-name>\n  kubectl scale deployment <name> --replicas=<num>\n  kubectl delete pod <name>';
+        if (sub === 'run') {
+          const podName = res || 'custom-pod';
+          return `pod/${podName} created (standalone).`;
+        }
         if (sub === 'get' && (res === 'pods' || res === 'pod' || res === 'po')) {
-          return `NAMESPACE       NAME                                READY  STATUS    NODE\n` + cluster.pods.map(p => `${p.namespace.padEnd(15)} ${p.name.padEnd(35)} 1/1    ${p.status.padEnd(9)} ${p.nodeId}`).join('\n');
+          return `NAMESPACE       NAME                                READY  STATUS    RESTARTS  NODE\n` + cluster.pods.map(p => `${p.namespace.padEnd(15)} ${p.name.padEnd(35)} 1/1    ${p.status.padEnd(9)} ${p.restartCount}         ${p.nodeId}`).join('\n');
         }
         if (sub === 'get' && (res === 'nodes' || res === 'no')) {
           return `NAME                 STATUS   INTERNAL-IP\n` + cluster.nodes.map(n => `${n.name.padEnd(20)} ${n.status.padEnd(8)} ${n.ip}`).join('\n');
@@ -1398,6 +1473,8 @@
                       <span>•</span>
                       <span>Pods: <strong className="text-emerald-400">{cluster.pods.filter(p => p.status === 'Running').length}/{cluster.pods.length}</strong></span>
                       <span>•</span>
+                      <span>Deployments: <strong className="text-blue-400">{cluster.deployments.length}</strong></span>
+                      <span>•</span>
                       <span>Services: <strong className="text-amber-400">{visibleServices.length}</strong></span>
                       <span>•</span>
                       <span>Ingresses: <strong className="text-emerald-400">{visibleIngresses.length}</strong></span>
@@ -1602,15 +1679,24 @@
                   <div className="flex items-center justify-between mb-3 font-mono text-xs font-bold text-slate-300">
                     <div className="flex items-center gap-2">
                       <Icon name="server" className="w-4 h-4 text-blue-400" />
-                      <span>Cluster Worker Nodes ({cluster.nodes.length}) — Hosting Multi-Namespace Pods</span>
+                      <span>Cluster Worker Nodes ({cluster.nodes.length}) — Hosting Workload Pods</span>
                     </div>
-                    <button
-                      onClick={addNode}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/20 text-blue-300 text-xs font-bold border border-blue-500/30 hover:bg-blue-600/40"
-                    >
-                      <Icon name="plus" className="w-3.5 h-3.5" />
-                      <span>Add Worker Node</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setActiveModal('pod')}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600/20 text-emerald-300 text-xs font-bold border border-emerald-500/30 hover:bg-emerald-600/40"
+                      >
+                        <Icon name="box" className="w-3.5 h-3.5" />
+                        <span>+ Pod (Standalone)</span>
+                      </button>
+                      <button
+                        onClick={addNode}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600/20 text-blue-300 text-xs font-bold border border-blue-500/30 hover:bg-blue-600/40"
+                      >
+                        <Icon name="plus" className="w-3.5 h-3.5" />
+                        <span>+ Node</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1715,6 +1801,11 @@
                                           <span className="font-mono text-xs font-bold text-slate-100 truncate">{pod.name}</span>
                                         </div>
                                         <div className="flex items-center gap-1 shrink-0">
+                                          {pod.isStandalone && (
+                                            <span className="text-[8px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase" title="Standalone pod: not managed by Deployment controller">
+                                              Standalone
+                                            </span>
+                                          )}
                                           <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border ${nsColor.bg} ${nsColor.text} ${nsColor.border}`}>
                                             ns: {pod.namespace}
                                           </span>
@@ -2363,7 +2454,14 @@
                   </button>
                 </Tooltip>
 
-                <Tooltip title="Create Deployment" desc="Deploys containerized application replicas across worker nodes with self-healing." analogy="Issuing a fleet order to maintain 3 active ships." cmd="kubectl create deployment web --image=nginx --replicas=3" position="top">
+                <Tooltip title="Deploy Standalone Pod" desc="Launches a single unmanaged Pod (kind: Pod) onto a chosen node. Note: Standalone pods are NOT self-healing!" analogy="Launching an individual lifeboat without a fleet captain." cmd="kubectl run debug --image=busybox" position="top">
+                  <button onClick={() => setActiveModal('pod')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-600/30 text-xs font-semibold text-slate-200 hover:text-emerald-300 border border-slate-700 whitespace-nowrap">
+                    <Icon name="box" className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>+ Pod</span>
+                  </button>
+                </Tooltip>
+
+                <Tooltip title="Create Deployment" desc="Deploys managed container replicas with self-healing reconciliation and rolling updates." analogy="Issuing a fleet order to maintain 3 active ships." cmd="kubectl create deployment web --image=nginx --replicas=3" position="top">
                   <button onClick={() => setActiveModal('deployment')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-600/30 text-xs font-semibold text-slate-200 hover:text-cyan-300 border border-slate-700 whitespace-nowrap">
                     <Icon name="layers" className="w-3.5 h-3.5 text-cyan-400" />
                     <span>+ Deployment</span>
@@ -2441,8 +2539,127 @@
             </ModalWrapper>
           )}
 
+          {/* DEPLOY STANDALONE POD MODAL */}
+          {activeModal === 'pod' && (
+            <ModalWrapper title="Deploy Standalone Pod (kind: Pod)" onClose={() => setActiveModal(null)}>
+              <form onSubmit={handleCreateStandalonePod} className="space-y-3 text-xs font-mono">
+                <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-[11px] leading-relaxed">
+                  <strong>💡 Educational Concept:</strong> Standalone Pods are direct atomic units. If a standalone pod crashes or is killed, it is <strong>NOT</strong> automatically replaced by Kubernetes because there is no Deployment/ReplicaSet controller managing it!
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 mb-1">Pod Name</label>
+                  <input
+                    type="text"
+                    value={podForm.name}
+                    onChange={e => setPodForm({...podForm, name: e.target.value})}
+                    placeholder="e.g. redis-cache, debug-pod"
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-slate-400 mb-1">Namespace</label>
+                    <select
+                      value={podForm.ns}
+                      onChange={e => setPodForm({...podForm, ns: e.target.value})}
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    >
+                      {namespacesList.map(n => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">Target Node (Placement)</label>
+                    <select
+                      value={podForm.nodeId}
+                      onChange={e => setPodForm({...podForm, nodeId: e.target.value})}
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    >
+                      <option value="">Auto (kube-scheduler)</option>
+                      {cluster.nodes.map(n => <option key={n.id} value={n.id}>{n.name} ({n.zone})</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 mb-1">Container Image</label>
+                  <input
+                    type="text"
+                    value={podForm.image}
+                    onChange={e => setPodForm({...podForm, image: e.target.value})}
+                    placeholder="e.g. redis:7-alpine, nginx:alpine, busybox"
+                    className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-slate-400 mb-1">Port</label>
+                    <input
+                      type="number"
+                      value={podForm.port}
+                      onChange={e => setPodForm({...podForm, port: e.target.value})}
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">CPU Req</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={podForm.cpu}
+                      onChange={e => setPodForm({...podForm, cpu: e.target.value})}
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">RAM (MB)</label>
+                    <input
+                      type="number"
+                      value={podForm.mem}
+                      onChange={e => setPodForm({...podForm, mem: e.target.value})}
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-slate-400 text-[10px] mb-1">Label Key</label>
+                    <input
+                      type="text"
+                      value={podForm.labelKey}
+                      onChange={e => setPodForm({...podForm, labelKey: e.target.value})}
+                      placeholder="app"
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 text-[10px] mb-1">Label Value</label>
+                    <input
+                      type="text"
+                      value={podForm.labelVal}
+                      onChange={e => setPodForm({...podForm, labelVal: e.target.value})}
+                      placeholder="redis"
+                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white"
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold mt-2">
+                  Deploy Pod to Cluster
+                </button>
+              </form>
+            </ModalWrapper>
+          )}
+
           {activeModal === 'deployment' && (
-            <ModalWrapper title="Create Deployment" onClose={() => setActiveModal(null)}>
+            <ModalWrapper title="Create Deployment (Managed Replicas)" onClose={() => setActiveModal(null)}>
               <form onSubmit={handleCreateDeployment} className="space-y-3 text-xs font-mono">
                 <div><label className="block text-slate-400 mb-1">Name</label><input type="text" value={depForm.name} onChange={e => setDepForm({...depForm, name: e.target.value})} className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-white" required /></div>
                 <div>
@@ -2649,7 +2866,7 @@
     function TerminalSimulator({ runKubectl }) {
       const [input, setInput] = useState('');
       const [history, setHistory] = useState([
-        { id: '1', text: 'KubeVerse Interactive Kubectl Terminal [v1.30.2]\nType "kubectl get pods", "kubectl get ingress", or "kubectl get svc" to inspect.' }
+        { id: '1', text: 'KubeVerse Interactive Kubectl Terminal [v1.30.2]\nType "kubectl get pods", "kubectl run <pod-name> --image=<img-name>", or "kubectl get svc" to inspect.' }
       ]);
       const endRef = useRef(null);
       useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [history]);
@@ -2674,7 +2891,7 @@
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="kubectl get pods, kubectl get ingress, kubectl get svc"
+              placeholder="kubectl get pods, kubectl run redis --image=redis:7-alpine, kubectl get svc"
               className="flex-1 bg-transparent text-white focus:outline-none placeholder:text-slate-600 text-xs"
               autoFocus
             />
