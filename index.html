@@ -60,10 +60,10 @@
     ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 1); }
     
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fadeIn { animation: fadeIn 0.25s ease-out forwards; }
+    .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
 </head>
 <body class="text-slate-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200 min-h-screen">
@@ -154,7 +154,7 @@
         analogy: 'Airport Control Tower: all internal and external communication must pass through, be authenticated, and validated here.',
         whyItMatters: [
           'Exposes the Kubernetes REST API to accept YAML manifests and CLI commands.',
-          'Authenticates, authorizes (RBAC), and validates all requests.',
+          'Authenticates, authorizes (RBAC), and validates all incoming cluster requests.',
           'The ONLY component permitted to communicate directly with etcd.'
         ],
         keyAttributes: [{ label: 'Port', description: '6443 (HTTPS)' }],
@@ -517,7 +517,7 @@
       }
     ];
 
-    // --- 🌟 CRISP, HIGH-CONTRAST LIGHT-THEME TOOLTIP COMPONENT 🌟 ---
+    // --- 🌟 SOLID PURE WHITE HIGH-CONTRAST TOOLTIP COMPONENT 🌟 ---
     const Tooltip = ({ conceptId, title, desc, analogy, cmd, points, children, position = "top" }) => {
       const [show, setShow] = useState(false);
       const c = K8S_CONCEPTS[conceptId];
@@ -534,27 +534,30 @@
         <div className="relative inline-block w-full" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
           {children}
           {show && (tooltipTitle || tooltipDesc) && (
-            <div className={`absolute z-50 ${position === 'bottom' ? 'top-full mt-2.5' : 'bottom-full mb-2.5'} left-1/2 -translate-x-1/2 w-84 sm:w-96 p-4 rounded-2xl bg-white/98 text-slate-900 border-2 border-cyan-500 shadow-2xl shadow-cyan-500/25 text-left pointer-events-none animate-fadeIn ring-4 ring-cyan-500/15`}>
+            <div
+              style={{ backgroundColor: '#ffffff' }}
+              className={`absolute z-[9999] ${position === 'bottom' ? 'top-full mt-2.5' : 'bottom-full mb-2.5'} left-1/2 -translate-x-1/2 w-80 sm:w-96 max-w-[90vw] p-4 rounded-2xl text-slate-950 border-2 border-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-left pointer-events-none animate-fadeIn ring-4 ring-cyan-400/40`}
+            >
               {/* Header Badge */}
-              <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
-                <div className="flex items-center gap-2 font-bold text-slate-900 font-mono text-xs truncate">
-                  <span className="w-3 h-3 rounded-full shrink-0 shadow-md" style={{ backgroundColor: tooltipColor }}></span>
-                  <span className="truncate text-sm">{tooltipTitle}</span>
+              <div className="flex items-center justify-between border-b-2 border-slate-200 pb-2 mb-2">
+                <div className="flex items-center gap-2 font-bold text-slate-950 font-mono text-sm truncate">
+                  <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow" style={{ backgroundColor: tooltipColor }}></span>
+                  <span className="truncate">{tooltipTitle}</span>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 font-mono shrink-0 uppercase tracking-wider">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-900 border border-cyan-400 font-mono shrink-0 uppercase tracking-wider">
                   {tooltipKind}
                 </span>
               </div>
               
               {/* Core Description */}
-              <p className="text-slate-700 text-xs font-sans leading-relaxed mb-2 font-normal">
+              <p className="text-slate-800 text-xs font-sans leading-relaxed mb-2.5 font-medium">
                 {tooltipDesc}
               </p>
               
               {/* Real-World Analogy Highlight Box */}
               {tooltipAnalogy && (
-                <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-300 text-[11px] text-amber-900 italic flex items-start gap-2 mb-2 shadow-sm font-sans">
-                  <span className="text-base shrink-0">✨</span>
+                <div style={{ backgroundColor: '#fef3c7' }} className="p-2.5 rounded-xl border border-amber-300 text-xs text-amber-950 italic flex items-start gap-2 mb-2.5 shadow-sm font-sans">
+                  <span className="text-base shrink-0 not-italic">✨</span>
                   <div>
                     <strong className="not-italic text-[10px] uppercase tracking-wider text-amber-950 font-bold block mb-0.5">Real-World Analogy</strong>
                     <span>{tooltipAnalogy}</span>
@@ -564,11 +567,11 @@
 
               {/* Why It Matters / Key Architecture Rules */}
               {tooltipPoints && tooltipPoints.length > 0 && (
-                <div className="space-y-1 mb-2 pt-1 border-t border-slate-100 font-sans text-[11px] text-slate-700">
-                  <strong className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">Key Architecture Rules:</strong>
+                <div className="space-y-1 mb-2.5 pt-1.5 border-t border-slate-200 font-sans text-xs text-slate-800">
+                  <strong className="text-[10px] uppercase tracking-wider text-slate-600 font-bold block">Key Architecture Rules:</strong>
                   {tooltipPoints.slice(0, 2).map((pt, i) => (
                     <div key={i} className="flex items-start gap-1.5 leading-snug">
-                      <span className="text-cyan-600 font-bold text-xs shrink-0">•</span>
+                      <span className="text-cyan-700 font-bold text-sm shrink-0 leading-none">•</span>
                       <span>{pt}</span>
                     </div>
                   ))}
@@ -577,7 +580,7 @@
 
               {/* Kubectl Command */}
               {tooltipCmd && (
-                <div className="p-2 rounded-lg bg-slate-900 text-emerald-400 font-mono text-[11px] flex items-center justify-between border border-slate-800 shadow-inner">
+                <div style={{ backgroundColor: '#020617' }} className="p-2 rounded-lg text-emerald-400 font-mono text-[11px] flex items-center justify-between border border-slate-800 shadow-inner">
                   <div className="flex items-center gap-1.5 truncate">
                     <span className="text-slate-500 font-bold">$</span>
                     <span className="truncate">{tooltipCmd}</span>
@@ -585,7 +588,7 @@
                 </div>
               )}
 
-              <div className="text-[10px] text-blue-700 mt-2 font-mono text-center font-semibold bg-blue-50 py-1 rounded-lg border border-blue-200">
+              <div style={{ backgroundColor: '#eff6ff' }} className="text-[10px] text-blue-900 mt-2 font-mono text-center font-bold py-1 rounded-lg border border-blue-200">
                 👉 Click element to inspect full YAML & commands
               </div>
             </div>
@@ -613,7 +616,7 @@
       // Cluster State
       const [cluster, setCluster] = useState(() => JSON.parse(JSON.stringify(PRESETS[0].state)));
       const [logs, setLogs] = useState([
-        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with light high-contrast educational tooltips.' }
+        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with solid white high-visibility tooltips.' }
       ]);
 
       // Traffic Screen State
@@ -1028,7 +1031,7 @@
 
       return (
         <div className="min-h-screen flex flex-col">
-          {/* HEADER WITH RICH LIGHT-THEMED TOOLTIPS */}
+          {/* HEADER */}
           <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 px-4 py-2.5 shadow-xl">
             <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
               {/* Brand */}
@@ -1163,14 +1166,14 @@
           {/* MAIN CONTENT AREA */}
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
             {/* ============================================================== */}
-            {/* 1. VISUAL CANVAS VIEW (ALL ELEMENTS HAVE RICH LIGHT TOOLTIPS) */}
+            {/* 1. VISUAL CANVAS VIEW */}
             {/* ============================================================== */}
             {viewMode === 'canvas' && (
               <div className="space-y-6 pb-28 animate-fadeIn">
                 {/* Namespace Selector Banner */}
                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <Tooltip conceptId="namespace">
+                    <Tooltip conceptId="namespace" position="bottom">
                       <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'namespace' })}>
                         <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/30">
                           <Icon name="folder" className="w-4 h-4" />
@@ -1225,7 +1228,7 @@
                       <span>Services: <strong className="text-amber-400">{visibleServices.length}</strong></span>
                     </div>
                     {cluster.hpa && (
-                      <Tooltip conceptId="hpa">
+                      <Tooltip conceptId="hpa" position="bottom">
                         <span className="px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 flex items-center gap-1 text-[11px] cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'hpa' })}>
                           <Icon name="trendingUp" className="w-3.5 h-3.5 text-emerald-400" />
                           HPA Active ({cluster.hpa.minReplicas}-{cluster.hpa.maxReplicas} pods)
@@ -1253,7 +1256,7 @@
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {['api-server', 'etcd', 'scheduler', 'controller-manager'].map(id => (
-                      <Tooltip key={id} conceptId={id}>
+                      <Tooltip key={id} conceptId={id} position="bottom">
                         <div
                           onClick={() => setSelectedElement({ type: 'concept', id })}
                           className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900 transition-all cursor-pointer group"
@@ -1279,7 +1282,7 @@
                       <Icon name="globe" className="w-4 h-4 text-emerald-400" />
                       <span>Layer 7 Ingress Controller</span>
                     </div>
-                    <Tooltip conceptId="ingress">
+                    <Tooltip conceptId="ingress" position="bottom">
                       <div
                         onClick={() => setSelectedElement({ type: 'ingress', id: cluster.ingress.id })}
                         className="p-3.5 rounded-xl bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 cursor-pointer shadow-lg max-w-md"
@@ -1329,7 +1332,7 @@
                       {visibleServices.map(svc => {
                         const nsColor = getNsColor(svc.namespace);
                         return (
-                          <Tooltip key={svc.id} conceptId="service">
+                          <Tooltip key={svc.id} conceptId="service" position="bottom">
                             <div
                               onClick={() => setSelectedElement({ type: 'service', id: svc.id })}
                               className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-500/60 cursor-pointer shadow-lg group"
@@ -1375,7 +1378,7 @@
                   </div>
                 )}
 
-                {/* 4. Worker Nodes & Hosted Pods */}
+                {/* 4. Worker Nodes & Hosted Pods (Without overflow-hidden so tooltips are never cut off) */}
                 <div>
                   <div className="flex items-center justify-between mb-3 font-mono text-xs font-bold text-slate-300">
                     <div className="flex items-center gap-2">
@@ -1401,11 +1404,11 @@
                       const memPct = Math.min(100, Math.round((node.memAllocated / node.memTotal) * 100));
 
                       return (
-                        <div key={node.id} className="rounded-2xl border bg-slate-900 border-slate-700 shadow-xl overflow-hidden flex flex-col">
+                        <div key={node.id} className="rounded-2xl border bg-slate-900 border-slate-700 shadow-xl flex flex-col relative">
                           {/* Node Header */}
-                          <div className="p-4 bg-slate-950 border-b border-slate-800">
+                          <div className="p-4 bg-slate-950 border-b border-slate-800 rounded-t-2xl">
                             <div className="flex items-start justify-between">
-                              <Tooltip conceptId="node">
+                              <Tooltip conceptId="node" position="bottom">
                                 <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setSelectedElement({ type: 'node', id: node.id })}>
                                   <div className="p-2 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
                                     <Icon name="server" className="w-5 h-5" />
@@ -1477,7 +1480,7 @@
                               filteredNodePods.map(pod => {
                                 const nsColor = getNsColor(pod.namespace);
                                 return (
-                                  <Tooltip key={pod.id} conceptId="pod">
+                                  <Tooltip key={pod.id} conceptId="pod" position="top">
                                     <div
                                       onClick={() => setSelectedElement({ type: 'pod', id: pod.id })}
                                       className={`p-3 rounded-xl bg-slate-950 border transition-all cursor-pointer ${
@@ -1537,7 +1540,7 @@
                         {visibleConfigMaps.map(cm => {
                           const nsColor = getNsColor(cm.namespace);
                           return (
-                            <Tooltip key={cm.id} conceptId="configmap">
+                            <Tooltip key={cm.id} conceptId="configmap" position="top">
                               <div className="p-3 rounded-xl bg-slate-950 border border-cyan-500/30 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'configmap' })}>
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="font-mono text-xs font-bold text-slate-200">{cm.name}</span>
@@ -1562,7 +1565,7 @@
                           const nsColor = getNsColor(sec.namespace);
                           const isShown = Boolean(showSecretMap[sec.id]);
                           return (
-                            <Tooltip key={sec.id} conceptId="secret">
+                            <Tooltip key={sec.id} conceptId="secret" position="top">
                               <div className="p-3 rounded-xl bg-slate-950 border border-rose-500/30 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'secret' })}>
                                 <div className="flex items-center justify-between mb-1">
                                   <span className="font-mono text-xs font-bold text-slate-200">{sec.name}</span>
@@ -1592,7 +1595,7 @@
                           <span>PVC Storage ({visiblePvcs.length})</span>
                         </div>
                         {visiblePvcs.map(pvc => (
-                          <Tooltip key={pvc.id} conceptId="pvc">
+                          <Tooltip key={pvc.id} conceptId="pvc" position="top">
                             <div className="p-3 rounded-xl bg-slate-950 border border-purple-500/30 cursor-pointer" onClick={() => setSelectedElement({ type: 'concept', id: 'pvc' })}>
                               <div className="flex justify-between font-mono text-xs font-bold text-slate-200 mb-1">
                                 <span>{pvc.name}</span>
