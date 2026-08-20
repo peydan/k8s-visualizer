@@ -109,8 +109,7 @@
         play: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>,
         pause: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>,
         map: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>,
-        activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
-        info: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+        activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
       };
       return icons[name] || <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/></svg>;
     };
@@ -126,7 +125,7 @@
     };
     const getNsColor = (ns) => NS_COLORS[ns] || NS_COLORS['custom'];
 
-    // --- K8S EDUCATIONAL CONCEPTS CATALOG ---
+    // --- ENRICHED K8S EDUCATIONAL CONCEPTS CATALOG ---
     const K8S_CONCEPTS = {
       'namespace': {
         id: 'namespace',
@@ -136,32 +135,292 @@
         shortDescription: 'Provides a virtual cluster boundary for isolating resources, teams, and environments within a single physical cluster.',
         analogy: 'Apartments in a high-rise building. Each family has private space while sharing the building\'s physical foundations (Worker Nodes, CPU/RAM).',
         whyItMatters: [
-          'Prevents naming collisions across microservices.',
-          'Worker nodes are cluster-wide; pods and services belong to specific namespaces.',
+          'Prevents naming collisions (e.g. "api" in prod and "api" in staging).',
+          'Worker nodes span across all namespaces—nodes are cluster-wide infrastructure, while pods belong to specific namespaces.',
           'Cross-namespace communication uses FQDN: `<service-name>.<namespace>.svc.cluster.local`.'
         ],
         keyAttributes: [{ label: 'DNS Format', description: '<service>.<namespace>.svc.cluster.local' }],
-        kubectlCommands: [{ command: 'kubectl get ns', explanation: 'Lists all active namespaces' }, { command: 'kubectl get pods -n <namespace>', explanation: 'Lists pods inside a specific namespace' }],
+        kubectlCommands: [{ command: 'kubectl get ns', explanation: 'Lists all active namespaces' }, { command: 'kubectl get pods -n production', explanation: 'Lists pods in production namespace' }],
         yamlSnippet: `apiVersion: v1\nkind: Namespace\nmetadata:\n  name: production`,
         iconName: 'folder',
         color: '#10b981'
       },
-      'api-server': { id: 'api-server', name: 'kube-apiserver', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Central gateway and REST API hub of the cluster.', analogy: 'Airport Control Tower: all internal and external communication must pass through and be authenticated here.', whyItMatters: ['Authenticates and coordinates all cluster operations.', 'Only component permitted to talk to etcd.'], keyAttributes: [{ label: 'Port', description: '6443' }], kubectlCommands: [{ command: 'kubectl cluster-info', explanation: 'Prints control plane address' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: kube-apiserver`, iconName: 'server', color: '#3b82f6' },
-      'etcd': { id: 'etcd', name: 'etcd Key-Value Store', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Consistent distributed state database holding the cluster\'s truth.', analogy: 'Master permanent ledger of truth. If it isn\'t written in etcd, Kubernetes doesn\'t know it exists.', whyItMatters: ['Holds the state of all resources.', 'Uses Raft consensus.'], keyAttributes: [{ label: 'Consensus', description: 'Raft' }], kubectlCommands: [{ command: 'etcdctl member list', explanation: 'Lists etcd cluster members' }], yamlSnippet: `kind: Pod\nmetadata:\n  name: etcd`, iconName: 'database', color: '#06b6d4' },
-      'scheduler': { id: 'scheduler', name: 'kube-scheduler', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Watches for unscheduled Pods and assigns them to the best Worker Node.', analogy: 'Hotel Concierge: evaluates pod CPU/RAM resource requests and books them into an available room (Node).', whyItMatters: ['Evaluates CPU/RAM constraints, taints, and affinities.'], keyAttributes: [{ label: 'Algorithm', description: 'Filter -> Score' }], kubectlCommands: [{ command: 'kubectl get events', explanation: 'Shows scheduler decisions' }], yamlSnippet: `nodeSelector:\n  disktype: ssd`, iconName: 'compass', color: '#a855f7' },
-      'controller-manager': { id: 'controller-manager', name: 'kube-controller-manager', kind: 'Control Plane', category: 'control-plane', shortDescription: 'Runs continuous reconciliation loops comparing desired state vs actual state.', analogy: 'Thermostat autopilot that detects missing pod replicas and immediately starts replacements.', whyItMatters: ['Recreates dead pods automatically.'], keyAttributes: [{ label: 'Design', description: 'Declarative reconciliation' }], kubectlCommands: [{ command: 'kubectl get deployments -w', explanation: 'Watch rollouts' }], yamlSnippet: `replicas: 4`, iconName: 'cpu', color: '#ec4899' },
-      'node': { id: 'node', name: 'Worker Node', kind: 'Compute Infrastructure', category: 'compute', shortDescription: 'Physical or virtual server providing compute (CPU/RAM).', analogy: 'Cargo ship holding shipping containers (Pods) from multiple namespaces simultaneously.', whyItMatters: ['Runs kubelet, container runtime, and kube-proxy.'], keyAttributes: [{ label: 'Daemons', description: 'kubelet, kube-proxy' }], kubectlCommands: [{ command: 'kubectl get nodes -o wide', explanation: 'Lists all cluster nodes with IP addresses and status' }, { command: 'kubectl drain <node-name>', explanation: 'Safely evicts all running pods for maintenance' }], yamlSnippet: `kind: Node\nmetadata:\n  name: worker-01`, iconName: 'server', color: '#3b82f6' },
-      'pod': { id: 'pod', name: 'Pod', kind: 'Workload Primitive', category: 'workload', shortDescription: 'Smallest deployable unit containing one or more tightly coupled containers.', analogy: 'Shipping container hold sharing network localhost and volumes.', whyItMatters: ['Every Pod gets a unique IP and shares localhost.'], keyAttributes: [{ label: 'Lifecycle', description: 'Pending -> ContainerCreating -> Running' }], kubectlCommands: [{ command: 'kubectl get pods -o wide', explanation: 'Lists pods with node placement and IP' }, { command: 'kubectl logs <pod-name>', explanation: 'Container stdout logs' }], yamlSnippet: `apiVersion: v1\nkind: Pod\nmetadata:\n  name: web`, iconName: 'box', color: '#10b981' },
-      'deployment': { id: 'deployment', name: 'Deployment', kind: 'Workload Controller', category: 'workload', shortDescription: 'Declarative controller managing Pod replicas and rolling updates.', analogy: 'Fleet Commander: ensures the exact number of desired pods stay alive.', whyItMatters: ['Guarantees replica count and zero-downtime rollouts.'], keyAttributes: [{ label: 'Strategy', description: 'RollingUpdate' }], kubectlCommands: [{ command: 'kubectl scale deployment <name> --replicas=5', explanation: 'Scale replicas' }], yamlSnippet: `apiVersion: apps/v1\nkind: Deployment`, iconName: 'layers', color: '#06b6d4' },
-      'service': { id: 'service', name: 'Service', kind: 'Networking Primitive', category: 'networking', shortDescription: 'Permanent virtual IP and load balancer for dynamic Pods.', analogy: 'Reception desk with a stable phone number routing calls to active desk agents.', whyItMatters: ['Decouples consumers from shifting ephemeral Pod IPs.'], keyAttributes: [{ label: 'Types', description: 'ClusterIP, NodePort, LoadBalancer, Headless' }], kubectlCommands: [{ command: 'kubectl get svc', explanation: 'List services' }], yamlSnippet: `apiVersion: v1\nkind: Service`, iconName: 'share2', color: '#f59e0b' },
-      'ingress': { id: 'ingress', name: 'Ingress Controller', kind: 'Networking Primitive', category: 'networking', shortDescription: 'Layer 7 HTTP/HTTPS entry point routing hostnames and paths.', analogy: 'Grand directory entrance of a skyscraper.', whyItMatters: ['Exposes multiple internal services behind 1 public IP with TLS.'], keyAttributes: [{ label: 'Layer', description: 'Application L7' }], kubectlCommands: [{ command: 'kubectl get ingress', explanation: 'List ingress' }], yamlSnippet: `kind: Ingress\nmetadata:\n  name: main-ingress`, iconName: 'globe', color: '#10b981' },
-      'configmap': { id: 'configmap', name: 'ConfigMap', kind: 'Config Object', category: 'config', shortDescription: 'Decoupled plain text configuration key-value pairs.', analogy: '.env configuration file injected into pods as environment variables or files.', whyItMatters: ['Separates app code from environment configs.'], keyAttributes: [{ label: 'Limit', description: '1 MiB' }], kubectlCommands: [{ command: 'kubectl create configmap app-config', explanation: 'Create config' }], yamlSnippet: `kind: ConfigMap\nmetadata:\n  name: config`, iconName: 'sliders', color: '#06b6d4' },
-      'secret': { id: 'secret', name: 'Secret', kind: 'Config Object', category: 'config', shortDescription: 'Stores sensitive passwords, tokens, and keys in tmpfs memory.', analogy: 'Digital Safety Deposit Box keeping credentials out of git and images.', whyItMatters: ['Keeps credentials out of container images.'], keyAttributes: [{ label: 'Storage', description: 'In-memory tmpfs' }], kubectlCommands: [{ command: 'kubectl get secrets', explanation: 'List secrets' }], yamlSnippet: `kind: Secret\nmetadata:\n  name: db-auth`, iconName: 'lock', color: '#ef4444' },
-      'pvc': { id: 'pvc', name: 'PersistentVolumeClaim (PVC)', kind: 'Storage Primitive', category: 'storage', shortDescription: 'Storage request ticket bound to persistent physical storage.', analogy: 'Voucher for a physical hard drive that survives pod restarts.', whyItMatters: ['Allows database containers to retain data across pod restarts.'], keyAttributes: [{ label: 'Mode', description: 'ReadWriteOnce' }], kubectlCommands: [{ command: 'kubectl get pvc', explanation: 'List claims' }], yamlSnippet: `kind: PersistentVolumeClaim`, iconName: 'hardDrive', color: '#8b5cf6' },
-      'hpa': { id: 'hpa', name: 'HorizontalPodAutoscaler (HPA)', kind: 'Scalability', category: 'scaling', shortDescription: 'Automatically scales pod replicas based on observed CPU load.', analogy: 'Calling backup staff during a store rush.', whyItMatters: ['Handles peak traffic spikes automatically.'], keyAttributes: [{ label: 'Target', description: 'CPU / RAM %' }], kubectlCommands: [{ command: 'kubectl get hpa', explanation: 'List HPA' }], yamlSnippet: `kind: HorizontalPodAutoscaler`, iconName: 'trendingUp', color: '#10b981' },
-      'traffic-send': { id: 'traffic-send', name: 'Traffic Simulator', kind: 'Simulation Action', category: 'networking', shortDescription: 'Fires an external HTTP request and traces the full path through Ingress → Service → Pod.', analogy: 'Sending a test letter through the postal delivery network.', whyItMatters: ['Visualizes Layer 7 routing, Layer 4 Virtual IP translation, and load balancing.'], keyAttributes: [{ label: 'Destination', description: 'Ingress -> Service -> Pod' }], kubectlCommands: [{ command: 'curl -I http://<service-ip>', explanation: 'Tests HTTP connectivity' }], yamlSnippet: `# Simulates curl / web client traffic`, iconName: 'send', color: '#06b6d4' },
-      'chaos-monkey': { id: 'chaos-monkey', name: 'Chaos Monkey / Pod Failure', kind: 'Reliability Test', category: 'workload', shortDescription: 'Terminates a healthy Pod to demonstrate self-healing declarative reconciliation.', analogy: 'Fire drill testing automatic emergency response.', whyItMatters: ['Proves Kubernetes replaces failed containers automatically without human intervention.'], keyAttributes: [{ label: 'Reconciliation', description: 'Controller Manager launches replacement' }], kubectlCommands: [{ command: 'kubectl delete pod <pod-name>', explanation: 'Deletes a pod to test self-healing' }], yamlSnippet: `# Test self-healing behavior`, iconName: 'skull', color: '#ef4444' },
-      'cpu-load': { id: 'cpu-load', name: 'CPU Load Generator', kind: 'Scaling Trigger', category: 'scaling', shortDescription: 'Simulates heavy CPU compute load on pods to trigger the Horizontal Pod Autoscaler (HPA).', analogy: 'Turning up the heat to watch the thermostat turn on AC.', whyItMatters: ['Demonstrates automatic scale-up when CPU exceeds target threshold.'], keyAttributes: [{ label: 'Target', description: '70% CPU Threshold' }], kubectlCommands: [{ command: 'kubectl top pods', explanation: 'Inspects real-time CPU/memory consumption' }], yamlSnippet: `# CPU load simulator`, iconName: 'zap', color: '#f59e0b' }
+      'api-server': {
+        id: 'api-server',
+        name: 'kube-apiserver',
+        kind: 'Control Plane Component',
+        category: 'control-plane',
+        shortDescription: 'The central gateway and REST API brain of the entire Kubernetes cluster.',
+        analogy: 'Airport Control Tower: all internal and external communication must pass through, be authenticated, and validated here.',
+        whyItMatters: [
+          'Exposes the Kubernetes REST API to accept YAML manifests and CLI commands.',
+          'Authenticates, authorizes (RBAC), and validates all requests.',
+          'The ONLY component permitted to communicate directly with etcd.'
+        ],
+        keyAttributes: [{ label: 'Port', description: '6443 (HTTPS)' }],
+        kubectlCommands: [{ command: 'kubectl cluster-info', explanation: 'Prints the address of the API server & control plane' }],
+        yamlSnippet: `kind: Pod\nmetadata:\n  name: kube-apiserver`,
+        iconName: 'server',
+        color: '#3b82f6'
+      },
+      'etcd': {
+        id: 'etcd',
+        name: 'etcd Key-Value Store',
+        kind: 'Control Plane Component',
+        category: 'control-plane',
+        shortDescription: 'Consistent distributed state database holding the single source of truth for the cluster.',
+        analogy: 'The master permanent ledger. If a resource isn\'t recorded in etcd, Kubernetes does not know it exists!',
+        whyItMatters: [
+          'Stores the entire cluster state, configuration, secrets, and real-time status.',
+          'Uses the Raft consensus algorithm for distributed high availability.'
+        ],
+        keyAttributes: [{ label: 'Consensus', description: 'Raft (Quorum)' }, { label: 'Port', description: '2379' }],
+        kubectlCommands: [{ command: 'etcdctl member list', explanation: 'Lists etcd cluster members in consensus' }],
+        yamlSnippet: `kind: Pod\nmetadata:\n  name: etcd`,
+        iconName: 'database',
+        color: '#06b6d4'
+      },
+      'scheduler': {
+        id: 'scheduler',
+        name: 'kube-scheduler',
+        kind: 'Control Plane Component',
+        category: 'control-plane',
+        shortDescription: 'Watches for unscheduled Pods and assigns them to the best available Worker Node.',
+        analogy: 'The Logistics Matchmaker: evaluates pod CPU/RAM requests and matches them with an empty room (Node) that has capacity.',
+        whyItMatters: [
+          'Evaluates resource constraints (CPU, RAM, GPU requests).',
+          'Enforces node affinity, anti-affinity, taints, tolerations, and topology spread.'
+        ],
+        keyAttributes: [{ label: 'Algorithm', description: 'Filtering (Predicates) -> Scoring (Priorities)' }],
+        kubectlCommands: [{ command: 'kubectl get events --sort-by=.metadata.creationTimestamp', explanation: 'Shows scheduler placement decisions' }],
+        yamlSnippet: `nodeSelector:\n  disktype: ssd`,
+        iconName: 'compass',
+        color: '#a855f7'
+      },
+      'controller-manager': {
+        id: 'controller-manager',
+        name: 'kube-controller-manager',
+        kind: 'Control Plane Component',
+        category: 'control-plane',
+        shortDescription: 'Runs continuous reconciliation loops comparing desired state with actual cluster state.',
+        analogy: 'The Autopilot & Thermostat: notices when a replica dies and immediately triggers a new replacement.',
+        whyItMatters: [
+          'Bundles ReplicaSet Controller, Node Controller, Endpoint Controller.',
+          'Implements declarative reconciliation: "Observe -> Compare -> Reconcile".'
+        ],
+        keyAttributes: [{ label: 'Design Principle', description: 'Level-triggered reconciliation loop' }],
+        kubectlCommands: [{ command: 'kubectl get deployments -w', explanation: 'Watch controller-manager scale and reconcile replicas' }],
+        yamlSnippet: `replicas: 4 # Controller Manager guarantees 4 run!`,
+        iconName: 'cpu',
+        color: '#ec4899'
+      },
+      'node': {
+        id: 'node',
+        name: 'Worker Node',
+        kind: 'Compute Infrastructure',
+        category: 'compute',
+        shortDescription: 'A physical or virtual server providing compute (CPU/RAM) to host containerized workloads.',
+        analogy: 'A cargo freighter ship. Each ship has a specific deck capacity (CPU/RAM) holding shipping containers (Pods) from any namespace.',
+        whyItMatters: [
+          'Nodes are cluster-wide infrastructure that can run pods from multiple namespaces simultaneously.',
+          'Runs the Kubelet node agent, container runtime (containerd), and kube-proxy.'
+        ],
+        keyAttributes: [{ label: 'Daemons', description: 'kubelet, kube-proxy, containerd' }],
+        kubectlCommands: [
+          { command: 'kubectl get nodes -o wide', explanation: 'Lists all cluster nodes with IP addresses and status' },
+          { command: 'kubectl drain <node-name> --ignore-daemonsets', explanation: 'Safely evicts all running pods for node maintenance' }
+        ],
+        yamlSnippet: `kind: Node\nmetadata:\n  name: worker-01`,
+        iconName: 'server',
+        color: '#3b82f6'
+      },
+      'pod': {
+        id: 'pod',
+        name: 'Pod',
+        kind: 'Workload Primitive',
+        category: 'workload',
+        shortDescription: 'The smallest and simplest deployable unit in Kubernetes, containing one or more containers.',
+        analogy: 'A shipping container hold carrying closely tied containers sharing localhost networking and volumes.',
+        whyItMatters: [
+          'Every Pod gets its own unique Cluster IP address inside its namespace.',
+          'Containers inside the same Pod share localhost and can share volumes.'
+        ],
+        keyAttributes: [{ label: 'Lifecycle', description: 'Pending -> ContainerCreating -> Running -> Succeeded/Failed' }],
+        kubectlCommands: [
+          { command: 'kubectl get pods -o wide', explanation: 'Lists pods with node placement and IP' },
+          { command: 'kubectl logs <pod-name> -n <namespace>', explanation: 'Streams stdout logs from container' }
+        ],
+        yamlSnippet: `apiVersion: v1\nkind: Pod\nmetadata:\n  name: web`,
+        iconName: 'box',
+        color: '#10b981'
+      },
+      'deployment': {
+        id: 'deployment',
+        name: 'Deployment',
+        kind: 'Workload Controller',
+        category: 'workload',
+        shortDescription: 'Declarative controller managing Pod replicas, self-healing, and zero-downtime rolling updates.',
+        analogy: 'The Fleet Commander: You declare "Keep 3 web pods alive at all times", and it manages ReplicaSets automatically.',
+        whyItMatters: [
+          'Self-Healing: Automatically recreates dead or crashed pods immediately.',
+          'Rolling Updates: Seamlessly updates pods one-by-one without downtime.'
+        ],
+        keyAttributes: [{ label: 'Strategy', description: 'RollingUpdate' }],
+        kubectlCommands: [{ command: 'kubectl scale deployment <name> --replicas=5', explanation: 'Scales deployment replicas' }],
+        yamlSnippet: `apiVersion: apps/v1\nkind: Deployment`,
+        iconName: 'layers',
+        color: '#06b6d4'
+      },
+      'service': {
+        id: 'service',
+        name: 'Service',
+        kind: 'Networking Primitive',
+        category: 'networking',
+        shortDescription: 'Provides a permanent virtual IP and DNS name to load-balance traffic across dynamic Pods.',
+        analogy: 'A Reception Desk with a permanent phone number: callers reach the desk, which forwards to an available agent (Pod).',
+        whyItMatters: [
+          'Stable internal DNS name: `<service-name>.<namespace>.svc.cluster.local`.',
+          'Decouples clients from ephemeral Pod IP addresses that change on restart.'
+        ],
+        keyAttributes: [{ label: 'Types', description: 'ClusterIP, NodePort, LoadBalancer, Headless' }],
+        kubectlCommands: [{ command: 'kubectl get svc -A', explanation: 'Lists services in all namespaces' }],
+        yamlSnippet: `apiVersion: v1\nkind: Service`,
+        iconName: 'share2',
+        color: '#f59e0b'
+      },
+      'ingress': {
+        id: 'ingress',
+        name: 'Ingress Controller',
+        kind: 'Networking Primitive',
+        category: 'networking',
+        shortDescription: 'Layer 7 HTTP/HTTPS entry point that routes external requests based on hostnames and URL paths.',
+        analogy: 'The Grand Entrance and Directory Board of a skyscraper routing incoming visitors to the right department.',
+        whyItMatters: [
+          'Consolidates routing: exposes multiple internal services behind a single public IP.',
+          'Handles SSL/TLS termination and path rewrites.'
+        ],
+        keyAttributes: [{ label: 'Layer', description: 'Application L7 (HTTP/HTTPS)' }],
+        kubectlCommands: [{ command: 'kubectl get ingress -A', explanation: 'Lists ingress in all namespaces' }],
+        yamlSnippet: `kind: Ingress\nmetadata:\n  name: main-ingress`,
+        iconName: 'globe',
+        color: '#10b981'
+      },
+      'configmap': {
+        id: 'configmap',
+        name: 'ConfigMap',
+        kind: 'Config Object',
+        category: 'config',
+        shortDescription: 'Stores decoupled plain text configuration key-value pairs for applications.',
+        analogy: 'The .env configuration file injected into pods as environment variables or mounted files.',
+        whyItMatters: [
+          'Separates application code from environment-specific configuration.',
+          'Allows updating configuration without rebuilding container images.'
+        ],
+        keyAttributes: [{ label: 'Limit', description: '1 MiB max size per object' }],
+        kubectlCommands: [{ command: 'kubectl create configmap app-config --from-literal=ENV=prod', explanation: 'Creates a configmap' }],
+        yamlSnippet: `kind: ConfigMap\nmetadata:\n  name: config`,
+        iconName: 'sliders',
+        color: '#06b6d4'
+      },
+      'secret': {
+        id: 'secret',
+        name: 'Secret',
+        kind: 'Config Object',
+        category: 'config',
+        shortDescription: 'Stores sensitive passwords, tokens, and keys mounted into tmpfs memory.',
+        analogy: 'A Digital Safety Deposit Box: keeps passwords and API keys out of git repositories and container images.',
+        whyItMatters: [
+          'Mounted into Pods using in-memory tmpfs so credentials are never written to disk.',
+          'Enables fine-grained RBAC permissions on secrets.'
+        ],
+        keyAttributes: [{ label: 'Storage', description: 'In-memory tmpfs' }],
+        kubectlCommands: [{ command: 'kubectl get secrets', explanation: 'Lists secrets in namespace' }],
+        yamlSnippet: `kind: Secret\nmetadata:\n  name: db-auth`,
+        iconName: 'lock',
+        color: '#ef4444'
+      },
+      'pvc': {
+        id: 'pvc',
+        name: 'PersistentVolumeClaim (PVC)',
+        kind: 'Storage Primitive',
+        category: 'storage',
+        shortDescription: 'A storage request ticket bound to persistent physical disk storage (PersistentVolume).',
+        analogy: 'A Voucher for a physical hard drive: databases attach this disk so data survives even if the pod restarts.',
+        whyItMatters: [
+          'Decouples application storage requests from underlying cloud storage infrastructure (EBS, GPD, NFS).',
+          'Preserves state across container restarts and rescheduling.'
+        ],
+        keyAttributes: [{ label: 'Access Mode', description: 'ReadWriteOnce / ReadWriteMany' }],
+        kubectlCommands: [{ command: 'kubectl get pvc', explanation: 'Lists persistent volume claims' }],
+        yamlSnippet: `kind: PersistentVolumeClaim`,
+        iconName: 'hardDrive',
+        color: '#8b5cf6'
+      },
+      'hpa': {
+        id: 'hpa',
+        name: 'HorizontalPodAutoscaler (HPA)',
+        kind: 'Scalability Controller',
+        category: 'scaling',
+        shortDescription: 'Automatically adjusts the number of pod replicas based on observed CPU/RAM utilization.',
+        analogy: 'Calling in backup cashiers during store rush hours to handle customer traffic, then scaling back down.',
+        whyItMatters: [
+          'Prevents server crashes during peak traffic spikes.',
+          'Saves cloud compute costs by scaling down during quiet hours.'
+        ],
+        keyAttributes: [{ label: 'Target', description: 'Target CPU/RAM Utilization %' }],
+        kubectlCommands: [{ command: 'kubectl get hpa', explanation: 'Lists autoscalers and current metrics' }],
+        yamlSnippet: `kind: HorizontalPodAutoscaler`,
+        iconName: 'trendingUp',
+        color: '#10b981'
+      },
+      'traffic-send': {
+        id: 'traffic-send',
+        name: 'Traffic Routing Simulation',
+        kind: 'Interactive Action',
+        category: 'networking',
+        shortDescription: 'Simulates an incoming HTTP client request and traces the full route through Ingress → Service → Pod.',
+        analogy: 'Sending a test postal package through the delivery network to verify addresses and transfers.',
+        whyItMatters: [
+          'Visualizes Layer 7 routing rules, Layer 4 Virtual IP translation, and round-robin load balancing in action.'
+        ],
+        keyAttributes: [{ label: 'Flow', description: 'Client -> Ingress -> Service -> Pod' }],
+        kubectlCommands: [{ command: 'curl -I http://<service-ip>', explanation: 'Tests HTTP service connectivity' }],
+        yamlSnippet: `# Live traffic tracer`,
+        iconName: 'send',
+        color: '#06b6d4'
+      },
+      'chaos-monkey': {
+        id: 'chaos-monkey',
+        name: 'Chaos Monkey (Kill Pod)',
+        kind: 'Reliability Test',
+        category: 'workload',
+        shortDescription: 'Simulates a container crash or pod termination to demonstrate declarative self-healing.',
+        analogy: 'A fire drill: tests the system\'s automatic emergency response and replica replacement.',
+        whyItMatters: [
+          'Proves that the Kubernetes Controller Manager detects the missing replica and immediately launches a replacement.'
+        ],
+        keyAttributes: [{ label: 'Reconciliation', description: 'Controller Manager launches replacement' }],
+        kubectlCommands: [{ command: 'kubectl delete pod <pod-name>', explanation: 'Deletes a pod to test automatic recreation' }],
+        yamlSnippet: `# Self-healing test`,
+        iconName: 'skull',
+        color: '#ef4444'
+      },
+      'cpu-load': {
+        id: 'cpu-load',
+        name: 'CPU Load Generator',
+        kind: 'Scaling Trigger',
+        category: 'scaling',
+        shortDescription: 'Simulates heavy CPU compute load on pods to trigger the Horizontal Pod Autoscaler (HPA).',
+        analogy: 'Turning up the room temperature to watch the smart thermostat automatically kick on the AC.',
+        whyItMatters: [
+          'Demonstrates automatic scale-up when CPU exceeds the 70% target utilization threshold.'
+        ],
+        keyAttributes: [{ label: 'Target', description: '70% CPU Threshold' }],
+        kubectlCommands: [{ command: 'kubectl top pods', explanation: 'Inspects real-time CPU/memory consumption' }],
+        yamlSnippet: `# CPU load simulator`,
+        iconName: 'zap',
+        color: '#f59e0b'
+      }
     };
 
     // --- PRESET ARCHITECTURES ---
@@ -258,49 +517,76 @@
       }
     ];
 
-    // --- RICH TOOLTIP COMPONENT FOR EVERY ELEMENT ---
-    const Tooltip = ({ conceptId, title, desc, analogy, cmd, children, position = "top" }) => {
+    // --- 🌟 CRISP, HIGH-CONTRAST LIGHT-THEME TOOLTIP COMPONENT 🌟 ---
+    const Tooltip = ({ conceptId, title, desc, analogy, cmd, points, children, position = "top" }) => {
       const [show, setShow] = useState(false);
       const c = K8S_CONCEPTS[conceptId];
 
       const tooltipTitle = c ? c.name : title;
       const tooltipDesc = c ? c.shortDescription : desc;
       const tooltipAnalogy = c ? c.analogy : analogy;
-      const tooltipKind = c ? (c.kind || c.category) : 'Guidance';
-      const tooltipColor = c ? c.color : '#06b6d4';
+      const tooltipKind = c ? (c.kind || c.category) : 'Architecture Component';
+      const tooltipColor = c ? c.color : '#0284c7';
       const tooltipCmd = c && c.kubectlCommands ? c.kubectlCommands[0]?.command : cmd;
+      const tooltipPoints = c ? c.whyItMatters : points;
 
       return (
         <div className="relative inline-block w-full" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
           {children}
           {show && (tooltipTitle || tooltipDesc) && (
-            <div className={`absolute z-50 ${position === 'bottom' ? 'top-full mt-2' : 'bottom-full mb-2'} left-1/2 -translate-x-1/2 w-80 p-3.5 rounded-2xl bg-slate-900/98 border border-slate-700 shadow-2xl backdrop-blur-xl text-left pointer-events-none text-xs animate-fadeIn ring-1 ring-cyan-500/20`}>
-              <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-2">
-                <div className="flex items-center gap-1.5 font-bold text-white font-mono truncate">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow" style={{ backgroundColor: tooltipColor }}></span>
-                  <span className="truncate">{tooltipTitle}</span>
+            <div className={`absolute z-50 ${position === 'bottom' ? 'top-full mt-2.5' : 'bottom-full mb-2.5'} left-1/2 -translate-x-1/2 w-84 sm:w-96 p-4 rounded-2xl bg-white/98 text-slate-900 border-2 border-cyan-500 shadow-2xl shadow-cyan-500/25 text-left pointer-events-none animate-fadeIn ring-4 ring-cyan-500/15`}>
+              {/* Header Badge */}
+              <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+                <div className="flex items-center gap-2 font-bold text-slate-900 font-mono text-xs truncate">
+                  <span className="w-3 h-3 rounded-full shrink-0 shadow-md" style={{ backgroundColor: tooltipColor }}></span>
+                  <span className="truncate text-sm">{tooltipTitle}</span>
                 </div>
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono shrink-0 uppercase tracking-wider">{tooltipKind}</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 font-mono shrink-0 uppercase tracking-wider">
+                  {tooltipKind}
+                </span>
               </div>
               
-              <p className="text-slate-300 text-[11px] leading-relaxed mb-2 font-sans">{tooltipDesc}</p>
+              {/* Core Description */}
+              <p className="text-slate-700 text-xs font-sans leading-relaxed mb-2 font-normal">
+                {tooltipDesc}
+              </p>
               
+              {/* Real-World Analogy Highlight Box */}
               {tooltipAnalogy && (
-                <div className="p-2 rounded-xl bg-indigo-950/50 border border-indigo-500/30 text-[10px] text-indigo-200 italic flex items-start gap-1.5 mb-2">
-                  <Icon name="sparkles" className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
-                  <span>{tooltipAnalogy}</span>
+                <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-300 text-[11px] text-amber-900 italic flex items-start gap-2 mb-2 shadow-sm font-sans">
+                  <span className="text-base shrink-0">✨</span>
+                  <div>
+                    <strong className="not-italic text-[10px] uppercase tracking-wider text-amber-950 font-bold block mb-0.5">Real-World Analogy</strong>
+                    <span>{tooltipAnalogy}</span>
+                  </div>
                 </div>
               )}
 
+              {/* Why It Matters / Key Architecture Rules */}
+              {tooltipPoints && tooltipPoints.length > 0 && (
+                <div className="space-y-1 mb-2 pt-1 border-t border-slate-100 font-sans text-[11px] text-slate-700">
+                  <strong className="text-[10px] uppercase tracking-wider text-slate-500 font-bold block">Key Architecture Rules:</strong>
+                  {tooltipPoints.slice(0, 2).map((pt, i) => (
+                    <div key={i} className="flex items-start gap-1.5 leading-snug">
+                      <span className="text-cyan-600 font-bold text-xs shrink-0">•</span>
+                      <span>{pt}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Kubectl Command */}
               {tooltipCmd && (
-                <div className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                  <span className="text-slate-500">$</span>
-                  <span className="truncate">{tooltipCmd}</span>
+                <div className="p-2 rounded-lg bg-slate-900 text-emerald-400 font-mono text-[11px] flex items-center justify-between border border-slate-800 shadow-inner">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="text-slate-500 font-bold">$</span>
+                    <span className="truncate">{tooltipCmd}</span>
+                  </div>
                 </div>
               )}
 
-              <div className="text-[9px] text-cyan-400 mt-2 font-mono text-center opacity-80">
-                Click element to open full Inspector
+              <div className="text-[10px] text-blue-700 mt-2 font-mono text-center font-semibold bg-blue-50 py-1 rounded-lg border border-blue-200">
+                👉 Click element to inspect full YAML & commands
               </div>
             </div>
           )}
@@ -319,7 +605,7 @@
       const [showSecretMap, setShowSecretMap] = useState({});
 
       // Builder Modals
-      const [activeModal, setActiveModal] = useState(null); // 'deployment' | 'service' | 'ingress' | 'namespace'
+      const [activeModal, setActiveModal] = useState(null);
       const [depForm, setDepForm] = useState({ name: 'api-server', image: 'node:20-alpine', port: 3000, replicas: 2, ns: 'production' });
       const [svcForm, setSvcForm] = useState({ name: 'api-svc', type: 'ClusterIP', port: 80, targetPort: 3000, key: 'app', val: 'api-server', ns: 'production' });
       const [newNsName, setNewNsName] = useState('');
@@ -327,10 +613,10 @@
       // Cluster State
       const [cluster, setCluster] = useState(() => JSON.parse(JSON.stringify(PRESETS[0].state)));
       const [logs, setLogs] = useState([
-        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with learning tooltips on all elements.' }
+        { id: 'l1', timestamp: new Date().toLocaleTimeString(), source: 'API-Server', type: 'info', message: 'KubeVerse cluster initialized with light high-contrast educational tooltips.' }
       ]);
 
-      // Traffic Screen Specific State
+      // Traffic Screen State
       const [trafficMethod, setTrafficMethod] = useState('GET');
       const [trafficPath, setTrafficPath] = useState('/');
       const [trafficHost, setTrafficHost] = useState('app.example.com');
@@ -363,7 +649,6 @@
         addLog('API-Server', 'info', `Loaded architecture preset: "${p.name}".`);
       };
 
-      // Filtered views based on selectedNamespaceFilter
       const visiblePods = useMemo(() => {
         if (selectedNamespaceFilter === 'all') return cluster.pods;
         return cluster.pods.filter(p => p.namespace === selectedNamespaceFilter);
@@ -389,7 +674,6 @@
         return cluster.pvcs.filter(p => p.namespace === selectedNamespaceFilter);
       }, [cluster.pvcs, selectedNamespaceFilter]);
 
-      // Service and Node mapping effects
       useEffect(() => {
         setCluster(prev => {
           const updatedNodes = prev.nodes.map(node => {
@@ -744,7 +1028,7 @@
 
       return (
         <div className="min-h-screen flex flex-col">
-          {/* HEADER WITH RICH TOOLTIPS */}
+          {/* HEADER WITH RICH LIGHT-THEMED TOOLTIPS */}
           <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-xl border-b border-slate-800 px-4 py-2.5 shadow-xl">
             <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
               {/* Brand */}
@@ -830,7 +1114,7 @@
                   ))}
                 </select>
 
-                <Tooltip conceptId="traffic-send">
+                <Tooltip conceptId="traffic-send" position="bottom">
                   <button
                     onClick={() => { setViewMode('traffic'); dispatchPacket(); }}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-blue-500 transition-all active:scale-95 whitespace-nowrap"
@@ -840,7 +1124,7 @@
                   </button>
                 </Tooltip>
 
-                <Tooltip conceptId="chaos-monkey">
+                <Tooltip conceptId="chaos-monkey" position="bottom">
                   <button
                     onClick={() => {
                       const running = cluster.pods.filter(p => p.status === 'Running');
@@ -853,7 +1137,7 @@
                   </button>
                 </Tooltip>
 
-                <Tooltip conceptId="cpu-load">
+                <Tooltip conceptId="cpu-load" position="bottom">
                   <button
                     onClick={toggleCpuSpike}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all whitespace-nowrap ${
@@ -879,7 +1163,7 @@
           {/* MAIN CONTENT AREA */}
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
             {/* ============================================================== */}
-            {/* 1. VISUAL CANVAS VIEW (ALL ELEMENTS HAVE RICH TOOLTIPS) */}
+            {/* 1. VISUAL CANVAS VIEW (ALL ELEMENTS HAVE RICH LIGHT TOOLTIPS) */}
             {/* ============================================================== */}
             {viewMode === 'canvas' && (
               <div className="space-y-6 pb-28 animate-fadeIn">
@@ -1707,28 +1991,28 @@
                   <span>Builder:</span>
                 </span>
 
-                <Tooltip title="Add Worker Node" desc="Scales physical/virtual compute cluster capacity." position="top">
+                <Tooltip title="Add Worker Node" desc="Scales the cluster's physical or virtual compute capacity (CPU and RAM)." analogy="Adding another cargo ship to the shipping fleet." cmd="kubectl get nodes" position="top">
                   <button onClick={addNode} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-blue-600/30 text-xs font-semibold text-slate-200 hover:text-cyan-300 border border-slate-700 whitespace-nowrap">
                     <Icon name="server" className="w-3.5 h-3.5 text-blue-400" />
                     <span>+ Node</span>
                   </button>
                 </Tooltip>
 
-                <Tooltip title="Create Deployment" desc="Deploy new containerized app replicas across worker nodes." position="top">
+                <Tooltip title="Create Deployment" desc="Deploys containerized application replicas across worker nodes with self-healing." analogy="Issuing a fleet order to maintain 3 active ships." cmd="kubectl create deployment web --image=nginx --replicas=3" position="top">
                   <button onClick={() => setActiveModal('deployment')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-600/30 text-xs font-semibold text-slate-200 hover:text-cyan-300 border border-slate-700 whitespace-nowrap">
                     <Icon name="layers" className="w-3.5 h-3.5 text-cyan-400" />
                     <span>+ Deployment</span>
                   </button>
                 </Tooltip>
 
-                <Tooltip title="Create Service" desc="Expose pods with a stable virtual ClusterIP & load balancer." position="top">
+                <Tooltip title="Create Service" desc="Exposes matching pods with a stable virtual ClusterIP & round-robin load balancer." analogy="Setting up a central reception desk phone number." cmd="kubectl expose deployment web --port=80 --target-port=8080" position="top">
                   <button onClick={() => setActiveModal('service')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-600/30 text-xs font-semibold text-slate-200 hover:text-amber-300 border border-slate-700 whitespace-nowrap">
                     <Icon name="share2" className="w-3.5 h-3.5 text-amber-400" />
                     <span>+ Service</span>
                   </button>
                 </Tooltip>
 
-                <Tooltip title="Create Namespace" desc="Add a virtual isolation partition for new teams or apps." position="top">
+                <Tooltip title="Create Namespace" desc="Adds a virtual cluster partition for multi-tenancy, isolating teams or staging/prod environments." analogy="Building a new apartment unit in the residential complex." cmd="kubectl create namespace staging" position="top">
                   <button onClick={() => setActiveModal('namespace')} className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-purple-600/30 text-xs font-semibold text-slate-200 hover:text-purple-300 border border-slate-700 whitespace-nowrap">
                     <Icon name="folder" className="w-3.5 h-3.5 text-purple-400" />
                     <span>+ Namespace</span>
